@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Create User</h1>
+    <form action="/api/user" method="post">
+    	<input type="text" name="username" placeholder="Username" />
+    	<input type="password" name="password" placeholder="Password" />
+    	<input type="text" name="type" />
+    	<input type="submit" value="Create user"/>
+    </form>
+
+    <h1>Create Reservation</h1>
+    <form action="/api/reservation" method="post">
+    	<input type="text" name="mentorUsername" />
+    	<input type="date" name="date" />
+    	<input type="number" name="hour" min="1" max="24"/>
+    	<input type="submit" value="Create reservation">
+    </form>
+  </body>
+</html>
