@@ -39,6 +39,7 @@ export default class RegisterPage extends Component {
   	.then(res => {
   		console.log(res);
   		if(res.confirmation === 'success') {
+  			this.props.logInUser(res.result);
   			this.props.navigateToPage('profile');
   			this.props.setIsAuthenticated(true);
   		}

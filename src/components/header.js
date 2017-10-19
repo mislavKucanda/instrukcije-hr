@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import Const from '../../const';
+
 export default class Header extends Component {
 
 	constructor(props) {
@@ -22,53 +24,61 @@ export default class Header extends Component {
 	}
 
 	renderNavButtons() {
-		const { isAuthenticated } = this.props;
-		let navButtons;
-		// if the user is authenticated render Home, Profile and Logout nav buttons,
-		// but if the user is not authenticated render Home, Register and Login buttons
-		if(isAuthenticated) {
-			navButtons = (
-				<nav>
-          <ul className="nav nav-pills float-right">
-            <li className="nav-item">
-              <button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('home')}>Home</button>
-            </li>
-						<li className="nav-item">
-          		<button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('profile')}>Profile</button>
-        		</li>
-        		<li className="nav-item">
-          		<button type="button" className="btn btn-light" onClick={() => this.onLogOut()}>Logout</button>
-        		</li>
-        	</ul>
-        </nav>
-			);
-		} else {
-			navButtons = (
-				<nav>
-          <ul className="nav nav-pills float-right">
-            <li className="nav-item">
-              <button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('home')}>Home</button>
-            </li>
-						<li className="nav-item">
-          		<button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('register')}>Register</button>
-        		</li>
-        		<li className="nav-item">
-          		<button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('login')}>Login</button>
-        		</li>
-        	</ul>
-        </nav>
-			);
-		}
-		return navButtons;
-	}
+    const { isAuthenticated } = this.props;
+    const {
+      homeNavUrl,
+      registerNavUrl,
+      profilNavUrl,
+      logoutNavUrl,
+      loginNavUrl,
+    } = Const;
+
+    let navButtons;
+    // if the user is authenticated render Home, Profile and Logout nav buttons,
+    // but if the user is not authenticated render Home, Register and Login buttons
+    if(isAuthenticated) {
+      navButtons = (
+        <div className='float-right'>
+          <img src={homeNavUrl} onClick={() => this.props.navigateToPage('home')} style={{ width: 75, height: 75 }} />
+          <img src={profilNavUrl} onClick={() => this.props.navigateToPage('profile')} />
+          <img src={logoutNavUrl} onClick={() => this.onLogOut()} />
+        </div>
+      );
+    } else {
+      navButtons = (
+        <div className='float-right'>
+          <img src={homeNavUrl} onClick={() => this.props.navigateToPage('home')} style={{ width: 60, height: 60 }} />
+          <img src={registerNavUrl} onClick={() => this.props.navigateToPage('register')} style={{ width: 60, height: 60 }} />
+          <img src={loginNavUrl} onClick={() => this.props.navigateToPage('login')} style={{ width: 60, height: 60 }} />
+        </div>
+      );
+    }
+    return navButtons;
+  }
+
 
 	render() {
 		return(
-			<div className="header clearfix">
+			<div className="header clearfix" style={{ backgroundColor: '#36B39C'}}>
+        <div className="container">
         {this.renderNavButtons()}
-        <h3 className="text-muted">Instrukcije-hr</h3>
-        <hr />
+        
+        </div>
       </div>
     );
 	}
 }
+//<img src={Const.logoUrl} className="py-4" style={{ hight: 32, width: 200 }} />
+// <nav>
+//           <ul className="nav nav-pills float-right">
+//             <li className="nav-item">
+//               <button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('home')}>Home</button>
+//             </li>
+//             <li className="nav-item">
+//               <button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('register')}>Register</button>
+//             </li>
+//             <li className="nav-item">
+//               <button type="button" className="btn btn-light" onClick={() => this.props.navigateToPage('login')}>Login</button>
+//             </li>
+//           </ul>
+//         </nav>

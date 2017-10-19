@@ -13,6 +13,7 @@ var UserSchema = new Schema({
     type: { type: String },
     coordinates: [Number]
   },
+  category: { type:[String], default: [] },
   imgUrl: { type: String, default: '' },
   activated: { type: Boolean, default: false },
   paidThisMonth: { type: Boolean, default: false },

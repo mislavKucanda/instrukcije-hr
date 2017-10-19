@@ -18,11 +18,19 @@ export default class Body extends Component {
 		if(currentPage === 'home') {
 			return <HomePage />;
 		} else if(currentPage === 'profile') {
-			return <ProfilePage />;
+			return <ProfilePage user={this.props.user} />;
 		} else if(currentPage === 'register') {
-			return <RegisterPage navigateToPage={this.props.navigateToPage} setIsAuthenticated={this.props.setIsAuthenticated} />;
+			return <RegisterPage 
+				navigateToPage={this.props.navigateToPage} 
+				setIsAuthenticated={this.props.setIsAuthenticated} 
+				logInUser={this.props.logInUser} 
+			/>;
 		} else if(currentPage === 'login') {
-			return <LoginPage navigateToPage={this.props.navigateToPage} setIsAuthenticated={this.props.setIsAuthenticated} />;
+			return <LoginPage 
+				navigateToPage={this.props.navigateToPage} 
+				setIsAuthenticated={this.props.setIsAuthenticated} 
+				logInUser={this.props.logInUser} 
+			/>;
 		}
 	}
 

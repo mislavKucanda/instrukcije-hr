@@ -10,10 +10,12 @@ class App extends Component {
 		this.state = { 
 			isAuthenticated: false,
 			currentPage: 'home', 
+			user: {},
 		};
 
 		this.navigateToPage = this.navigateToPage.bind(this);
 		this.setIsAuthenticated = this.setIsAuthenticated.bind(this);
+		this.logInUser = this.logInUser.bind(this);
 	}
 
 	navigateToPage(page) {
@@ -22,6 +24,10 @@ class App extends Component {
 
 	setIsAuthenticated(value) {
 		this.setState({ isAuthenticated: value });
+	}
+
+	logInUser(user) {
+		this.setState({ user: user });
 	}
 
 	render() {
@@ -37,6 +43,8 @@ class App extends Component {
 					currentPage={this.state.currentPage} 
 					navigateToPage={this.navigateToPage}
 					setIsAuthenticated={this.setIsAuthenticated}
+					logInUser={this.logInUser}
+					user={this.state.user}
 				/>
 			</div>
 		);

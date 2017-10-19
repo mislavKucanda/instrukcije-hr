@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 export default class ProfilePage extends Component {
 	render() {
+		const { username, email, password, type, imgUrl, activated } = this.props.user;
 		return(
 			<div className="container">
 				<div className="jumbotron">
@@ -12,14 +13,15 @@ export default class ProfilePage extends Component {
 
 	      <div className="row marketing" style={{ color: 'white' }}>
 	        <div className="col-lg-6">
-	          <h4>Profile page</h4>
-	          <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+	          <h4>Username: {username}</h4>
+	          <p>Email: {email}</p>
 
-	          <h4>Profile page</h4>
-	          <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+	          <h4>Type: {type}</h4>
+	          <p>Activated: {activated}</p>
 
-	          <h4>Profile page</h4>
+	          <h4>Profile Picture</h4>
 	          <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+	          <img src={imgUrl} />
 	        </div>
 
 	        <div className="col-lg-6">
