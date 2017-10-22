@@ -1,10 +1,93 @@
 import React, { Component } from 'react';
 
 export default class ProfilePage extends Component {
+
+	constructor(props) {
+		super(props);
+
+		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
+		this.renderLocationInfo = this.renderLocationInfo.bind(this);
+		this.renderMobilePhoneInfo = this.renderMobilePhoneInfo.bind(this);
+		this.renderEmailInfo = this.renderEmailInfo.bind(this);
+	}
+	
+	renderDescriptionInfo() {
+		const { description } = this.props.user;
+		if(description !== null && description !== '') {
+			return (
+				<tr>
+					<th style={{ fontWeight: 400, textAlign: 'right', verticalAlign: 'top' }}>OPIS:</th>
+					<th className="pl-3" style={{ fontWeight: 400 }}>{description}</th>
+				</tr>
+				);
+		}
+		return null;
+	}
+
+	renderLocationInfo() {
+		const { address } = this.props.user;
+		if(address !== null && address !== '') {
+			return (
+				<tr>
+					<th style={{ fontWeight: 400, textAlign: 'right', verticalAlign: 'top' }}>LOKACIJA:</th>
+					<th className="pl-3" style={{ fontWeight: 400 }}>{address}</th>
+				</tr>
+				);
+		}
+		return null;
+	}
+
+	renderMobilePhoneInfo() {
+		const { mobilePhone } = this.props.user;
+		if(mobilePhone !== null && mobilePhone !== '') {
+			return (
+				<tr>
+					<th style={{ fontWeight: 400, textAlign: 'right', verticalAlign: 'top' }}>MOBITEL:</th>
+					<th className="pl-3" style={{ fontWeight: 400 }}>{mobilePhone}</th>
+				</tr>
+				);
+		}
+		return null;
+	}
+
+	renderEmailInfo() {
+		const { email } = this.props.user;
+		if(email !== null && email !== '') {
+			return (
+				<tr>
+					<th style={{ fontWeight: 400, textAlign: 'right', verticalAlign: 'top' }}>EMAIL:</th>
+					<th className="pl-3" style={{ fontWeight: 400 }}>{email}</th>
+				</tr>
+				);
+		}
+		return null;
+	}
+
 	render() {
 		const { username, email, password, type, imgUrl, activated } = this.props.user;
 		return(
 			<div className="container">
+				<div className="row">
+					<div className="col-lg-3 col-md-3 my-3">
+						<div>
+							<img src={imgUrl} alt="Profile picture" style={{ width: '100%', borderRadius: '3%' }} />
+							<div className="text-center mt-3">{username}</div>
+						</div>
+					</div>
+					<div className="col-lg-9 col-md-9" style={{ display:'flex', justifyContent:'center', alignItems:'center' }}>
+						<div>
+							<table>
+								<tbody>
+									{this.renderDescriptionInfo()}
+									{this.renderLocationInfo()}
+									{this.renderMobilePhoneInfo()}
+									{this.renderEmailInfo()}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
 				<div className="jumbotron">
 	        <h1 className="display-3">PROFILE PAGE</h1>
 	        <p className="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>

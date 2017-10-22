@@ -16,7 +16,12 @@ export default class Body extends Component {
 	renderBody() {
 		const { currentPage } = this.props;
 		if(currentPage === 'home') {
-			return <HomePage />;
+			return <HomePage 
+				userProfile={this.props.userProfile}
+				homePage={this.props.homePage}
+				setUserProfile={this.props.setUserProfile}
+				changeHomeDisplay={this.props.changeHomeDisplay}
+			/>;
 		} else if(currentPage === 'profile') {
 			return <ProfilePage user={this.props.user} />;
 		} else if(currentPage === 'register') {

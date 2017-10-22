@@ -15,6 +15,7 @@ export default class Header extends Component {
     this.onHooverElement = this.onHooverElement.bind(this);
     this.onStopHooverElement = this.onStopHooverElement.bind(this);
 		this.onLogOut = this.onLogOut.bind(this);
+    this.changeToHomePage = this.changeToHomePage.bind(this);
 	}
 
 	onLogOut() {
@@ -37,6 +38,12 @@ export default class Header extends Component {
     this.setState({ hooveredElement: '' });
   }
 
+  changeToHomePage() {
+    this.props.navigateToPage('home');
+    this.props.setUserProfile({});
+    this.props.changeHomeDisplay('home');
+  }
+
 	renderNavButtons() {
     const { isAuthenticated } = this.props;
     const { hooveredElement } = this.state;
@@ -56,7 +63,7 @@ export default class Header extends Component {
         <div className='float-right'>
           <img 
             src={homeNavUrl} 
-            onClick={() => this.props.navigateToPage('home')} 
+            onClick={this.changeToHomePage}
             style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
             onMouseOver={(elem) => this.onHooverElement(elem, 'home')} 
             onMouseOut={this.onStopHooverElement}
@@ -82,7 +89,7 @@ export default class Header extends Component {
         <div className='float-right'>
           <img 
             src={homeNavUrl} 
-            onClick={() => this.props.navigateToPage('home')} 
+            onClick={this.changeToHomePage}
             style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
             onMouseOver={(elem) => this.onHooverElement(elem, 'home')}
             onMouseOut={this.onStopHooverElement}
