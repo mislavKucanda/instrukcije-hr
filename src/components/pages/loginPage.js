@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 export default class RegisterPage extends Component {
 	constructor(props) {
@@ -42,6 +43,7 @@ export default class RegisterPage extends Component {
   			this.props.logInUser(res.result);
   			this.props.navigateToPage('profile');
   			this.props.setIsAuthenticated(true);
+  			this.props.history.push("/profil");
   		}
   	});
 	}

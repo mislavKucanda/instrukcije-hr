@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
 
 import HomePage from './pages/homePage';
 import ProfilePage from './pages/profilePage';
@@ -10,39 +11,49 @@ export default class Body extends Component {
 	constructor(props) {
 		super(props);
 
-		this.renderBody = this.renderBody.bind(this);
+		this.renderHome = this.renderHome.bind(this);
+		this.renderProfile = this.renderProfile.bind(this);
+		this.renderRegister = this.renderRegister.bind(this);
+		this.renderLogin = this.renderLogin.bind(this);
 	}
 
-	renderBody() {
-		const { currentPage } = this.props;
-		if(currentPage === 'home') {
-			return <HomePage 
-				userProfile={this.props.userProfile}
-				homePage={this.props.homePage}
-				setUserProfile={this.props.setUserProfile}
-				changeHomeDisplay={this.props.changeHomeDisplay}
-			/>;
-		} else if(currentPage === 'profile') {
-			return <ProfilePage user={this.props.user} />;
-		} else if(currentPage === 'register') {
-			return <RegisterPage 
-				navigateToPage={this.props.navigateToPage} 
-				setIsAuthenticated={this.props.setIsAuthenticated} 
-				logInUser={this.props.logInUser} 
-			/>;
-		} else if(currentPage === 'login') {
-			return <LoginPage 
-				navigateToPage={this.props.navigateToPage} 
-				setIsAuthenticated={this.props.setIsAuthenticated} 
-				logInUser={this.props.logInUser} 
-			/>;
-		}
+	renderHome() {
+		return <HomePage 
+			userProfile={this.props.userProfile}
+			homePage={this.props.homePage}
+			setUserProfile={this.props.setUserProfile}
+			changeHomeDisplay={this.props.changeHomeDisplay}
+		/>;
+	}
+
+	renderProfile() {
+		return <ProfilePage user={this.props.user} />;
+	}
+
+	renderRegister() {
+		return <RegisterPage 
+			navigateToPage={this.props.navigateToPage} 
+			setIsAuthenticated={this.props.setIsAuthenticated} 
+			logInUser={this.props.logInUser} 
+		/>;
+	}
+
+	renderLogin(props) {
+		return <LoginPage
+			{...props}
+			navigateToPage={this.props.navigateToPage} 
+			setIsAuthenticated={this.props.setIsAuthenticated} 
+			logInUser={this.props.logInUser} 
+		/>;
 	}
 
 	render() {
 		return(
 			<div>
-				{this.renderBody()}
+				<Route exact path="/" render={this.renderHome} />
+				<Route path="/profil" render={this.renderProfile} />
+				<Route path="/registracija" render={this.renderRegister} />
+				<Route path="/prijava" render={(props) => this.renderLogin(props)} />
 			</div>
 		);
 	}

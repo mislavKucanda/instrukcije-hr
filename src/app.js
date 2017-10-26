@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
 
 import Header from './components/header';
 import Body from './components/body';
+//import store from './stores';
 
 class App extends Component {
 	constructor(props) {
@@ -46,13 +49,15 @@ class App extends Component {
 		console.log(this.state);
 		return (
 			<div>
-				<Header 
+			 	<Header 
 					isAuthenticated={this.state.isAuthenticated} 
 					setIsAuthenticated={this.setIsAuthenticated}
 					navigateToPage={this.navigateToPage}
 					setUserProfile={this.setUserProfile}
 					changeHomeDisplay={this.changeHomeDisplay}
 				/>
+				<Route path="/registracija" component={() => <div>REGISTRACIJA</div>} />
+
 				<Body 
 					homePage={this.state.homePage}
 					userProfile={this.state.userProfile}
@@ -64,9 +69,9 @@ class App extends Component {
 					logInUser={this.logInUser}
 					user={this.state.user}
 				/>
-			</div>
+			</div>	
 		);
 	}
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<Provider><BrowserRouter><App /></BrowserRouter></Provider>, document.getElementById('root'));

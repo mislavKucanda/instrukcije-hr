@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import Const from '../../../const';
+import { Link } from 'react-router-dom'
 
+import Const from '../../../const';
 import ProfilePage from './profilePage'
 
 export default class HomePage extends Component {
@@ -121,18 +122,20 @@ export default class HomePage extends Component {
 				{profiles.map((profile, index) => {
 					if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
 						return(
-							<div className="card mb-3" onClick={() => this.onOpenProfile(profile)} key={index}>
-	    					{this.renderProfileImage(profile.imgUrl)}
-	    					<div className="card-block p-2">
-	      					<h4 className="card-title text-center">{profile.username}</h4>
-	      					<p className="card-text">{profile.description}</p>
-	    					</div>
-	    					<ul className="list-group list-group-flush">
-	    						{this.renderProfileInfo(Const.profileLogos.location, profile.address)}
-	    						{this.renderProfileInfo(Const.profileLogos.phone, profile.mobilePhone)}
-	    						{this.renderProfileInfo(Const.profileLogos.email, profile.email)}
-	    					</ul>
-	  					</div>
+							<Link to={"/profil/" + profile._id} key={index}>
+								<div className="card mb-3" onClick={() => this.onOpenProfile(profile)} key={index}>
+	    						{this.renderProfileImage(profile.imgUrl)}
+	    						<div className="card-block p-2">
+	      						<h4 className="card-title text-center">{profile.username}</h4>
+	      						<p className="card-text">{profile.description}</p>
+	    						</div>
+	    						<ul className="list-group list-group-flush">
+	    							{this.renderProfileInfo(Const.profileLogos.location, profile.address)}
+	    							{this.renderProfileInfo(Const.profileLogos.phone, profile.mobilePhone)}
+	    							{this.renderProfileInfo(Const.profileLogos.email, profile.email)}
+	    						</ul>
+	  						</div>
+	  					</Link>
 						);
 				})}
   		</div>

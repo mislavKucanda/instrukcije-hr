@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 
 import Const from '../../const';
 
@@ -61,53 +62,65 @@ export default class Header extends Component {
     if(isAuthenticated) {
       navButtons = (
         <div className='float-right'>
-          <img 
-            src={homeNavUrl} 
-            onClick={this.changeToHomePage}
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
-            onMouseOver={(elem) => this.onHooverElement(elem, 'home')} 
-            onMouseOut={this.onStopHooverElement}
-          />
-          <img 
-            src={profilNavUrl} 
-            onClick={() => this.props.navigateToPage('profile')} 
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'profile' ? '#5c9b8e' : null }}
-            onMouseOver={(elem) => this.onHooverElement(elem, 'profile')}
-            onMouseOut={this.onStopHooverElement}
-          />
-          <img 
-            src={logoutNavUrl} 
-            onClick={() => this.onLogOut()} 
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'logout' ? '#5c9b8e' : null }}
-            onMouseOver={(elem) => this.onHooverElement(elem, 'logout')}
-            onMouseOut={this.onStopHooverElement}
-          />
+          <Link to="/">
+            <img 
+              src={homeNavUrl} 
+              onClick={this.changeToHomePage}
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
+              onMouseOver={(elem) => this.onHooverElement(elem, 'home')} 
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
+          <Link to="/profil">
+            <img 
+              src={profilNavUrl} 
+              onClick={() => this.props.navigateToPage('profile')} 
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'profile' ? '#5c9b8e' : null }}
+              onMouseOver={(elem) => this.onHooverElement(elem, 'profile')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
+          <Link to="/">
+            <img 
+              src={logoutNavUrl} 
+              onClick={() => this.onLogOut()} 
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'logout' ? '#5c9b8e' : null }}
+              onMouseOver={(elem) => this.onHooverElement(elem, 'logout')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
         </div>
       );
     } else {
       navButtons = (
         <div className='float-right'>
-          <img 
-            src={homeNavUrl} 
-            onClick={this.changeToHomePage}
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
-            onMouseOver={(elem) => this.onHooverElement(elem, 'home')}
-            onMouseOut={this.onStopHooverElement}
-          />
-          <img 
-            src={registerNavUrl} 
-            onClick={() => this.props.navigateToPage('register')} 
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'register' ? '#5c9b8e' : null }} 
-            onMouseOver={(elem) => this.onHooverElement(elem, 'register')}
-            onMouseOut={this.onStopHooverElement}
-          />
-          <img 
-            src={loginNavUrl} 
-            onClick={() => this.props.navigateToPage('login')} 
-            style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'login' ? '#5c9b8e' : null }} 
-            onMouseOver={(elem) => this.onHooverElement(elem, 'login')}
-            onMouseOut={this.onStopHooverElement}
-          />
+          <Link to="/">
+            <img 
+              src={homeNavUrl} 
+              onClick={this.changeToHomePage}
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'home' ? '#5c9b8e' : null }} 
+              onMouseOver={(elem) => this.onHooverElement(elem, 'home')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
+          <Link to="/registracija">
+            <img 
+              src={registerNavUrl} 
+              onClick={() => this.props.navigateToPage('register')} 
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'register' ? '#5c9b8e' : null }} 
+              onMouseOver={(elem) => this.onHooverElement(elem, 'register')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
+          <Link to="/prijava">
+            <img 
+              src={loginNavUrl} 
+              onClick={() => this.props.navigateToPage('login')} 
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'login' ? '#5c9b8e' : null }} 
+              onMouseOver={(elem) => this.onHooverElement(elem, 'login')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
         </div>
       );
     }
