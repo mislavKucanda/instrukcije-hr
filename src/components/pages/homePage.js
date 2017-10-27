@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom';
 
+import actions from '../../actions';
 import Const from '../../../const';
-import ProfilePage from './profilePage'
+import ProfilePage from './profilePage';
 
-export default class HomePage extends Component {
+class HomePage extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			profiles: [],
 			hooverCategory: '',
 			selectedCategory: '',
 		};
@@ -83,8 +84,7 @@ export default class HomePage extends Component {
 		}).then(res => res.json())
 		.then(res => {
 			if(res.confirmation === 'success') {
-				this.setState({ profiles: res.results });
-				console.log(this.state);
+				this.props.getAllProfiles(res.results);
 			}
 		});
 	}
@@ -115,8 +115,7 @@ export default class HomePage extends Component {
 	}
 
 	renderProfiles() {
-		const { profiles } = this.state;
-
+		const { profiles } = this.props;
 		return (
 			<div className="card-columns">
 				{profiles.map((profile, index) => {
@@ -165,3 +164,17 @@ export default class HomePage extends Component {
 		}
 	}
 }
+
+const stateToProps = (state) => {
+	return {
+		profiles: state.profiles.profiles
+	};
+};
+
+const dispatchToProps = (dispatch) => {
+	return {
+		getAllProfiles: (profiles) => dispatch(actions.getAllProfiles(profiles)),
+	}
+};
+
+export default connect(stateToProps, dispatchToProps)(HomePage);

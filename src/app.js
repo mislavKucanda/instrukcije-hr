@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 
 import Header from './components/header';
 import Body from './components/body';
-//import store from './stores';
+import store from './store';
 
 class App extends Component {
 	constructor(props) {
@@ -74,4 +74,4 @@ class App extends Component {
 	}
 }
 
-ReactDOM.render(<Provider><BrowserRouter><App /></BrowserRouter></Provider>, document.getElementById('root'));
+ReactDOM.render(<Provider store={store.configure(null)}><BrowserRouter><App /></BrowserRouter></Provider>, document.getElementById('root'));
