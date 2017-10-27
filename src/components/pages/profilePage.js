@@ -142,7 +142,8 @@ class ProfilePage extends Component {
 
 const stateToProps = (state) => {
 	return {
-		profiles: state.profiles.profiles
+		profiles: state.profiles.profiles,
+		user: state.profiles.user,
 	};
 };
 

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux';
 
+import actions from '../actions';
 import Const from '../../const';
 
-export default class Header extends Component {
+class Header extends Component {
 
 	constructor(props) {
 		super(props);
@@ -24,7 +26,7 @@ export default class Header extends Component {
   		.then(res => {
   			console.log(res);
   			if(res.confirmation === 'success') {
-  				this.props.setIsAuthenticated(false);
+  				this.props.logOutUser();
   			}
   		});
 	}
@@ -125,3 +127,17 @@ export default class Header extends Component {
     );
 	}
 }
+
+const stateToProps = (state) => {
+  return {
+    isAuthenticated: state.profiles.isAuthenticated,
+  };
+};
+
+const dispatchToProps = (dispatch) => {
+  return {
+    logOutUser: () => dispatch(actions.logOutUser()),
+  }
+};
+
+export default connect(stateToProps, dispatchToProps)(Header);

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-export default class RegisterPage extends Component {
+import actions from '../../actions';
+
+class LoginPage extends Component {
 	constructor(props) {
 		super(props);
 
@@ -41,7 +44,7 @@ export default class RegisterPage extends Component {
   		console.log(res);
   		if(res.confirmation === 'success') {
   			this.props.logInUser(res.result);
-  			this.props.setIsAuthenticated(true);
+  			console.log(this.props.user);
   			this.props.history.push("/profil");
   		}
   	});
@@ -65,3 +68,17 @@ export default class RegisterPage extends Component {
 		);	
 	}
 }
+
+const stateToProps = (state) => {
+	return {
+		user: state.profiles.user
+	};
+};
+
+const dispatchToProps = (dispatch) => {
+	return {
+		logInUser: (user) => dispatch(actions.logInUser(user)),
+	}
+};
+
+export default connect(stateToProps, dispatchToProps)(LoginPage);

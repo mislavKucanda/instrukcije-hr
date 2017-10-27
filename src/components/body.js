@@ -23,27 +23,19 @@ export default class Body extends Component {
 	}
 
 	renderUserProfile() {
-		return <ProfilePage user={this.props.user} />;
+		return <ProfilePage />;
 	}
 
 	renderProfile(match) {
-		return <ProfilePage user={this.props.user} profileId={match.match.params.id} />;
+		return <ProfilePage profileId={match.match.params.id} />;
 	}
 
 	renderRegister(props) {
-		return <RegisterPage
-			{...props}
-			setIsAuthenticated={this.props.setIsAuthenticated} 
-			logInUser={this.props.logInUser} 
-		/>;
+		return <RegisterPage {...props} />;
 	}
 
 	renderLogin(props) {
-		return <LoginPage
-			{...props}
-			setIsAuthenticated={this.props.setIsAuthenticated} 
-			logInUser={this.props.logInUser} 
-		/>;
+		return <LoginPage {...props} />;
 	}
 
 	render() {

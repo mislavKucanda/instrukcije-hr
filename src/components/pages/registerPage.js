@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import Select from 'react-select';
 import axios from 'axios';
+import { connect } from 'react-redux';
 
+import actions from '../../actions';
 import Const from '../../../const';
 
-export default class RegisterPage extends Component {
+class RegisterPage extends Component {
 	constructor(props) {
 		super(props);
 
@@ -110,9 +112,7 @@ export default class RegisterPage extends Component {
   		})
 		}).then(res => res.json())
   	.then(res => {
-  		console.log(res);
   		this.props.logInUser(res.result);
-  		this.props.setIsAuthenticated(true);
   		this.props.history.push("/profil");
   	});
 	}
@@ -219,3 +219,17 @@ export default class RegisterPage extends Component {
 		);	
 	}
 }
+
+const stateToProps = (state) => {
+	return {
+		user: state.profiles.user,
+	};
+};
+
+const dispatchToProps = (dispatch) => {
+	return {
+		logInUser: (user) => dispatch(actions.logInUser(user)),
+	}
+};
+
+export default connect(stateToProps, dispatchToProps)(RegisterPage);
