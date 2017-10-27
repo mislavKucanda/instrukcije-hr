@@ -112,8 +112,8 @@ export default class RegisterPage extends Component {
   	.then(res => {
   		console.log(res);
   		this.props.logInUser(res.result);
-  		this.props.navigateToPage('profile');
   		this.props.setIsAuthenticated(true);
+  		this.props.history.push("/profil");
   	});
 	}
 

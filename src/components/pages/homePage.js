@@ -22,7 +22,6 @@ class HomePage extends Component {
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.renderProfileInfo = this.renderProfileInfo.bind(this);
 		this.renderProfileImage = this.renderProfileImage.bind(this);
-		this.onOpenProfile = this.onOpenProfile.bind(this);
 	}
 
 	componentDidMount() {
@@ -108,12 +107,6 @@ class HomePage extends Component {
 		return null;
 	}
 
-	onOpenProfile(userProfile) {
-		const { setUserProfile, changeHomeDisplay } = this.props;
-		changeHomeDisplay('profile');
-		setUserProfile(userProfile);
-	}
-
 	renderProfiles() {
 		const { profiles } = this.props;
 		return (
@@ -122,7 +115,7 @@ class HomePage extends Component {
 					if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
 						return(
 							<Link to={"/profil/" + profile._id} key={index}>
-								<div className="card mb-3" onClick={() => this.onOpenProfile(profile)} key={index}>
+								<div className="card mb-3" key={index}>
 	    						{this.renderProfileImage(profile.imgUrl)}
 	    						<div className="card-block p-2">
 	      						<h4 className="card-title text-center">{profile.username}</h4>
@@ -142,26 +135,16 @@ class HomePage extends Component {
 	}
 
 	render() {
-		const { homePage, userProfile } = this.props;
-		if(homePage == 'home') {
-			return(
-				<div className="container px-5">
-					<p className="text-center mb-0 mt-4">ODABERI PODRUČJE</p>
-					<hr className="mt-0" />
-		      {this.renderCategories()}
-		      <p className="text-center mb-0 mt-3">ODABERI INSTRUKTORA</p>
-					<hr className="mt-0" />
-					{this.renderProfiles()}
-		    </div>
-			);
-		}
-		if(homePage == 'profile') {
-			return(
-				<ProfilePage
-					user={userProfile}
-				/>
-			);
-		}
+		return(
+			<div className="container px-5">
+				<p className="text-center mb-0 mt-4">ODABERI PODRUČJE</p>
+				<hr className="mt-0" />
+		    {this.renderCategories()}
+		    <p className="text-center mb-0 mt-3">ODABERI INSTRUKTORA</p>
+				<hr className="mt-0" />
+				{this.renderProfiles()}
+		   </div>
+		);
 	}
 }
 

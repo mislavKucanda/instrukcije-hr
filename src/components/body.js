@@ -19,12 +19,7 @@ export default class Body extends Component {
 	}
 
 	renderHome() {
-		return <HomePage 
-			userProfile={this.props.userProfile}
-			homePage={this.props.homePage}
-			setUserProfile={this.props.setUserProfile}
-			changeHomeDisplay={this.props.changeHomeDisplay}
-		/>;
+		return <HomePage />;
 	}
 
 	renderUserProfile() {
@@ -35,9 +30,9 @@ export default class Body extends Component {
 		return <ProfilePage user={this.props.user} profileId={match.match.params.id} />;
 	}
 
-	renderRegister() {
-		return <RegisterPage 
-			navigateToPage={this.props.navigateToPage} 
+	renderRegister(props) {
+		return <RegisterPage
+			{...props}
 			setIsAuthenticated={this.props.setIsAuthenticated} 
 			logInUser={this.props.logInUser} 
 		/>;
@@ -46,7 +41,6 @@ export default class Body extends Component {
 	renderLogin(props) {
 		return <LoginPage
 			{...props}
-			navigateToPage={this.props.navigateToPage} 
 			setIsAuthenticated={this.props.setIsAuthenticated} 
 			logInUser={this.props.logInUser} 
 		/>;
@@ -58,7 +52,7 @@ export default class Body extends Component {
 				<Route exact path="/" render={this.renderHome} />
 				<Route exact path="/profil" render={this.renderUserProfile} />
 				<Route path="/profil/:id" render={(match) => this.renderProfile(match)} />
-				<Route path="/registracija" render={this.renderRegister} />
+				<Route path="/registracija" render={(props) => this.renderRegister(props)} />
 				<Route path="/prijava" render={(props) => this.renderLogin(props)} />
 			</div>
 		);
