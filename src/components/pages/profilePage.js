@@ -1,18 +1,35 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 
-export default class ProfilePage extends Component {
+class ProfilePage extends Component {
 
 	constructor(props) {
 		super(props);
+
+		this.state = {
+			profile: {},
+		}
 
 		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
 		this.renderLocationInfo = this.renderLocationInfo.bind(this);
 		this.renderMobilePhoneInfo = this.renderMobilePhoneInfo.bind(this);
 		this.renderEmailInfo = this.renderEmailInfo.bind(this);
 	}
+
+	componentDidMount() {
+		//If profile id is sent via URL properties, set profile in state of correct id
+		if(this.props.profileId) {
+			let profile = this.props.profiles.find((elem) => 
+				{ return elem._id === this.props.profileId });
+			this.setState({ profile });
+		//If user is registered/logged in, set profile in state from props
+		} else {
+			this.setState({ profile: this.props.user });
+		}
+	}
 	
 	renderDescriptionInfo() {
-		const { description } = this.props.user;
+		const { description } = this.state.profile;
 		if(description !== null && description !== '') {
 			return (
 				<tr>
@@ -25,7 +42,7 @@ export default class ProfilePage extends Component {
 	}
 
 	renderLocationInfo() {
-		const { address } = this.props.user;
+		const { address } = this.state.profile;
 		if(address !== null && address !== '') {
 			return (
 				<tr>
@@ -38,7 +55,7 @@ export default class ProfilePage extends Component {
 	}
 
 	renderMobilePhoneInfo() {
-		const { mobilePhone } = this.props.user;
+		const { mobilePhone } = this.state.profile;
 		if(mobilePhone !== null && mobilePhone !== '') {
 			return (
 				<tr>
@@ -51,7 +68,7 @@ export default class ProfilePage extends Component {
 	}
 
 	renderEmailInfo() {
-		const { email } = this.props.user;
+		const { email } = this.state.profile;
 		if(email !== null && email !== '') {
 			return (
 				<tr>
@@ -64,7 +81,7 @@ export default class ProfilePage extends Component {
 	}
 
 	render() {
-		const { username, email, password, type, imgUrl, activated } = this.props.user;
+		const { username, email, password, type, imgUrl, activated } = this.state.profile;
 		return(
 			<div className="container">
 				<div className="row">
@@ -122,3 +139,11 @@ export default class ProfilePage extends Component {
 		);
 	}
 }
+
+const stateToProps = (state) => {
+	return {
+		profiles: state.profiles.profiles
+	};
+};
+
+export default connect(stateToProps)(ProfilePage);

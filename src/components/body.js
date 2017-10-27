@@ -15,6 +15,7 @@ export default class Body extends Component {
 		this.renderProfile = this.renderProfile.bind(this);
 		this.renderRegister = this.renderRegister.bind(this);
 		this.renderLogin = this.renderLogin.bind(this);
+		this.renderUserProfile = this.renderUserProfile.bind(this);
 	}
 
 	renderHome() {
@@ -26,8 +27,12 @@ export default class Body extends Component {
 		/>;
 	}
 
-	renderProfile() {
+	renderUserProfile() {
 		return <ProfilePage user={this.props.user} />;
+	}
+
+	renderProfile(match) {
+		return <ProfilePage user={this.props.user} profileId={match.match.params.id} />;
 	}
 
 	renderRegister() {
@@ -51,7 +56,8 @@ export default class Body extends Component {
 		return(
 			<div>
 				<Route exact path="/" render={this.renderHome} />
-				<Route path="/profil" render={this.renderProfile} />
+				<Route exact path="/profil" render={this.renderUserProfile} />
+				<Route path="/profil/:id" render={(match) => this.renderProfile(match)} />
 				<Route path="/registracija" render={this.renderRegister} />
 				<Route path="/prijava" render={(props) => this.renderLogin(props)} />
 			</div>

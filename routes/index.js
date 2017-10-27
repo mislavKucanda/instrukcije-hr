@@ -22,6 +22,10 @@ router.get('/profil', function(req, res, next) {
   res.render('index');
 });
 
+router.get('/profil/:id', function(req, res, next) {
+  res.render('index');
+});
+
 router.get('/unospodataka', function(req, res, next) {
   res.render('createzone', { title: 'kreiranje novoga' });
 });
