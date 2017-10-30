@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
-class ProfilePage extends Component {
+class ProfileComponent extends Component {
 
 	constructor(props) {
 		super(props);
@@ -17,14 +17,18 @@ class ProfilePage extends Component {
 	}
 
 	componentDidMount() {
+		const { user } = this.props;
 		//If profile id is sent via URL properties, set profile in state of correct id
 		if(this.props.profileId) {
 			let profile = this.props.profiles.find((elem) => 
 				{ return elem._id === this.props.profileId });
 			this.setState({ profile });
-		//If user is registered/logged in, set profile in state from props
+		//If user is registered/logged in, set profile in state from props, otherwise redirect to log in
 		} else {
-			this.setState({ profile: this.props.user });
+			if(Object.getOwnPropertyNames(user).length === 0)
+				this.props.history.push("/prijava");
+			else
+				this.setState({ profile: user });
 		}
 	}
 	
@@ -147,4 +151,4 @@ const stateToProps = (state) => {
 	};
 };
 
-export default connect(stateToProps)(ProfilePage);
+export default connect(stateToProps)(ProfileComponent);

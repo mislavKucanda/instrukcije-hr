@@ -22,6 +22,10 @@ router.get('/profil', function(req, res, next) {
   res.render('index');
 });
 
+router.get('/postavke', function(req, res, next) {
+  res.render('index');
+});
+
 router.get('/profil/:id', function(req, res, next) {
   res.render('index');
 });

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import actions from '../../actions';
+import actions from '../actions';
 
-class LoginPage extends Component {
+class LoginComponent extends Component {
 	constructor(props) {
 		super(props);
 
@@ -81,4 +81,4 @@ const dispatchToProps = (dispatch) => {
 	}
 };
 
-export default connect(stateToProps, dispatchToProps)(LoginPage);
+export default connect(stateToProps, dispatchToProps)(LoginComponent);

@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 
-import actions from '../../actions';
-import Const from '../../../const';
-import ProfilePage from './profilePage';
+import actions from '../actions';
+import Const from '../../const';
 
-class HomePage extends Component {
+class HomeComponent extends Component {
 	constructor(props) {
 		super(props);
 
@@ -160,4 +159,4 @@ const dispatchToProps = (dispatch) => {
 	}
 };
 
-export default connect(stateToProps, dispatchToProps)(HomePage);
+export default connect(stateToProps, dispatchToProps)(HomeComponent);

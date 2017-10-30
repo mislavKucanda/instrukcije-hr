@@ -4,10 +4,10 @@ import Select from 'react-select';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
-import actions from '../../actions';
-import Const from '../../../const';
+import actions from '../actions';
+import Const from '../../const';
 
-class RegisterPage extends Component {
+class RegisterComponent extends Component {
 	constructor(props) {
 		super(props);
 
@@ -232,4 +232,4 @@ const dispatchToProps = (dispatch) => {
 	}
 };
 
-export default connect(stateToProps, dispatchToProps)(RegisterPage);
+export default connect(stateToProps, dispatchToProps)(RegisterComponent);

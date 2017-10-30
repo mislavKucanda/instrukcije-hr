@@ -1,25 +1,36 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
-import Header from './components/header';
-import Body from './components/body';
+import HeaderComponent from './components/headerComponent';
+import HomeComponent from './components/homeComponent';
+import ProfileComponent from './components/profileComponent';
+import RegisterComponent from './components/registerComponent';
+import LoginComponent from './components/loginComponent';
+import SettingsComponent from'./components/settingsComponent';
 import store from './store';
 
 class App extends Component {
-	constructor(props) {
-		super(props);
-	}
 
 	render() {
 		return (
 			<div>
-			 	<Header />
-				<Body />
+			 	<HeaderComponent />
+				<Route exact path="/" render={() => <HomeComponent />} />
+				<Route exact path="/profil" render={(props) => <ProfileComponent {...props} />} />
+				<Route path="/profil/:id" render={(props) => <ProfileComponent {...props} profileId={props.match.params.id} />} />
+				<Route path="/registracija" render={(props) => <RegisterComponent {...props} />} />
+				<Route path="/prijava" render={(props) => <LoginComponent {...props} />} />
+				<Route path="/postavke" render={(props) => <SettingsComponent {...props} />} />
 			</div>	
 		);
 	}
 }
 
-ReactDOM.render(<Provider store={store.configure(null)}><BrowserRouter><App /></BrowserRouter></Provider>, document.getElementById('root'));
+ReactDOM.render(
+	<Provider store={store.configure(null)}>
+		<BrowserRouter>
+			<App />
+		</BrowserRouter>
+	</Provider>, document.getElementById('root'));

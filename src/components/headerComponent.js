@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import actions from '../actions';
 import Const from '../../const';
 
-class Header extends Component {
+class HeaderComponent extends Component {
 
 	constructor(props) {
 		super(props);
@@ -43,6 +43,7 @@ class Header extends Component {
     const { isAuthenticated } = this.props;
     const { hooveredElement } = this.state;
     const {
+      settingsNavUrl,
       homeNavUrl,
       registerNavUrl,
       profilNavUrl,
@@ -69,6 +70,14 @@ class Header extends Component {
               src={profilNavUrl} 
               style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'profile' ? '#5c9b8e' : null }}
               onMouseOver={(elem) => this.onHooverElement(elem, 'profile')}
+              onMouseOut={this.onStopHooverElement}
+            />
+          </Link>
+          <Link to="/postavke">
+            <img 
+              src={settingsNavUrl} 
+              style={{ width: 60, height: 60, backgroundColor: hooveredElement === 'settings' ? '#5c9b8e' : null }}
+              onMouseOver={(elem) => this.onHooverElement(elem, 'settings')}
               onMouseOut={this.onStopHooverElement}
             />
           </Link>
@@ -140,4 +149,4 @@ const dispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(stateToProps, dispatchToProps)(Header);
+export default connect(stateToProps, dispatchToProps)(HeaderComponent);
