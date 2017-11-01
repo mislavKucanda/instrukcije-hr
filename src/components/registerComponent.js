@@ -98,6 +98,7 @@ class RegisterComponent extends Component {
     		'Accept': 'application/json, text/plain, */*',
     		'Content-Type': 'application/json'
   		},
+  		credentials: 'include',
   		body: JSON.stringify({
   			username: this.state.username,
 		  	email: this.state.email,

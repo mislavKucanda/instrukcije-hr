@@ -33,8 +33,9 @@ class LoginComponent extends Component {
  			method: 'post',
   		headers: {
     		'Accept': 'application/json, text/plain, */*',
-    		'Content-Type': 'application/json'
+    		'Content-Type': 'application/json',
   		},
+  		credentials: 'include',
   		body: JSON.stringify({
   			username: this.state.username,
 		  	password: this.state.password,

@@ -1,11 +1,11 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
-var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 
 // Authentication Packages
@@ -13,8 +13,12 @@ var session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var index = require('./routes/index');
+var api = require('./routes/api');
 var User = require('./models/User');
 var Const = require('./const');
+
+var app = express();
 
 var dbUrl = Const.dbUrl;
 //var dbUrl = 'mongodb://localhost/myapp';
@@ -25,11 +29,6 @@ mongoose.connect(dbUrl, function(err, res) {
 		console.log('DB CONNECTION SUCCESS.');
 	}
 });
-
-var index = require('./routes/index');
-var api = require('./routes/api');
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -46,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({
   secret: Const.secret,
-  resave: false,
+  resave: false,     
   saveUninitialized: false,
   store: new MongoStore({ mongooseConnection: mongoose.connection }),
   // enable if you use https

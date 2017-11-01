@@ -4,13 +4,14 @@ var passport = require('passport');
 var bcrypt = require('bcrypt');
 
 var controllers = require('../controllers');
+var User = require('../models/User');
 
 const saltRounds = 10;
 var router = express.Router();
 
 router.get('/logout', function(req, res) {
 	console.log('Log Out');
-	req.logOut();
+	req.logout();
 	console.log('Destroy session');
 	req.session.destroy(function(err) {
 		if (err)
@@ -23,6 +24,22 @@ router.get('/logout', function(req, res) {
 			message: 'You successfully logged out.',
 		});
 	});
+});
+
+//router.get('/testLogiranosti', passport.authenticate('local'), function(req, res) {
+	//res.json({ user: req.user });
+//});
+router.get('/userIsLoggedIn', function(req, res) {
+	//passport.authenticate('local', function(err, user, info) {
+		//if (err) { 
+			//return res.json({ error: err }); 
+		//}
+    //if (!user) { 
+    //	return res.json({ information: 'Niste logirani.' }); 
+    //}
+    //return res.json({ user: user });
+  //});
+  res.json({ session: req.session.passport });
 });
 
 router.get('/:resource', function(req, res, next) {
@@ -103,11 +120,18 @@ router.post('/:resource', function(req, res, next) {
 
 	if(resource === 'user') {
 
-		controller.find({username: req.body.username}, function(err, existingUser) {
+		//VALIDATION
+		//req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
+		//dodatne korisne funkcije: isEmail(), equals(req.body.passwordMatch)
+		//var errors = req.validationErrors();
+		//if(errors) {} else {tu prakticki treba staviti sve ostalo}
+
+		controller.find({ username: req.body.username }, function(err, existingUser) {
 			
 			if(existingUser.length === 0) {
 				console.log('Vnoter sem');
 				let newUser = req.body;
+				//ovo kriptiranje je puno logicnije staviti u controller
 				bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
 					newUser.password = hash;
 					controller.create(newUser, function(err, savedUser) {
@@ -152,18 +176,24 @@ router.post('/:resource', function(req, res, next) {
 	}
 });
 
+
+//ovo bi vjerojatno trebalo biti rješeno na nacin:
+//router.post('/login',
+//passport.authentification('local'), function(req, res){});
 router.post('/login', passport.authenticate('local', {
 	successRedirect: '/profile',
 	failureRedirect: '/login',
 }));
 
 passport.serializeUser(function(user_id, done) {
-  done(null, user_id);
+  User.findById(user_id, function(err, user) {
+  	done(err, user);
+  });
 });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
+passport.deserializeUser(function(user_id, done) {
+  User.findById(user_id, function(err, user) {
+  	done(err, user);
   });
 });
 

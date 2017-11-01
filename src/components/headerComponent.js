@@ -20,9 +20,31 @@ class HeaderComponent extends Component {
 		this.onLogOut = this.onLogOut.bind(this);
 	}
 
+    //When app is started, check if user is logged in (has valid session-cookie)
+  componentDidMount() {
+    fetch('http://localhost:3000/api/userIsLoggedIn', {
+      method: 'get',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+    }).then(res => res.json())
+    .then(res => {
+      if(res.session) {
+        console.log('Logged in!');
+        console.log(this.props);
+        console.log(res.session.user);
+        this.props.logInUser(res.session.user);
+      }
+    });
+  }
+
 	onLogOut() {
-		fetch('http://localhost:3000/api/logout')
-			.then(res => res.json())
+		fetch('http://localhost:3000/api/logout', {
+      method: 'get',
+      credentials: 'include',
+    }).then(res => res.json())
   		.then(res => {
   			console.log(res);
   			if(res.confirmation === 'success') {
@@ -146,6 +168,7 @@ const stateToProps = (state) => {
 const dispatchToProps = (dispatch) => {
   return {
     logOutUser: () => dispatch(actions.logOutUser()),
+    logInUser: (user) => dispatch(actions.logInUser(user)),
   }
 };
 
