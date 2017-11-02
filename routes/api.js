@@ -142,10 +142,21 @@ router.post('/:resource', function(req, res, next) {
 	if(resource === 'user') {
 
 		//VALIDATION
-		//req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
-		//dodatne korisne funkcije: isEmail(), equals(req.body.passwordMatch)
-		//var errors = req.validationErrors();
-		//if(errors) {} else {tu prakticki treba staviti sve ostalo}
+		req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
+		req.checkBody('password', 'Lozinka je obavezno polje.').notEmpty();
+		req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+		req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
+		req.checkBody('password', 'Unesene lozinke se ne podudaraju.').equals(req.body.passwordMatch);
+		var errors = req.validationErrors();
+		if(errors) {
+			var errorsList = [];
+			errors.map((error) => errorsList.push(error.msg));
+			res.json({
+				confirmation: 'fail',
+				result: errorsList,
+			});
+			return;
+		}
 
 		controller.find({ username: req.body.username }, function(err, existingUser) {
 			
@@ -174,7 +185,7 @@ router.post('/:resource', function(req, res, next) {
 			} else {
 				return res.json({
 					confirmation: 'fail',
-					message: 'Username je zauzet, molimo odaberite drugi.',
+					result: ['Korisničko ime je zauzeto.'],
 				});
 			}
 		});

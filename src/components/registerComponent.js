@@ -12,6 +12,7 @@ class RegisterComponent extends Component {
 		super(props);
 
 		this.state = {
+			errorMessages: [],
 			username: '',
 			email: '',
 			type: '',
@@ -36,6 +37,7 @@ class RegisterComponent extends Component {
 		this.renderCategorySelect = this.renderCategorySelect.bind(this);
 		this.onChangeFirstCategory = this.onChangeFirstCategory.bind(this);
 		this.onChangeSecondCategory = this.onChangeSecondCategory.bind(this);
+		this.renderWarnings = this.renderWarnings.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
 	}
@@ -113,8 +115,13 @@ class RegisterComponent extends Component {
   		})
 		}).then(res => res.json())
   	.then(res => {
-  		this.props.logInUser(res.result);
-  		this.props.history.push("/profil");
+  		if(res.confirmation === 'success') {
+	  		this.props.logInUser(res.result);
+	  		this.props.history.push("/profil");
+  		} else {
+  			console.log(res);
+  			this.setState({ errorMessages: res.result });
+  		} 
   	});
 	}
 
@@ -175,20 +182,39 @@ class RegisterComponent extends Component {
 		);
 	}
 
+	renderWarnings() {
+		if(this.state.errorMessages) {
+			return (
+				<div>
+					{this.state.errorMessages.map((message, index) => {
+						return (
+							<div className="alert alert-warning mt-3 mb-0" role="alert" key={index} >
+	  						<strong>Upozorenje!</strong> {message}
+							</div>
+						);
+					})}
+				</div>
+			);
+		} else {
+			return null;
+		}
+	}
+
 	render() {
 		return (
 			<div className="container">
-				<form action="/api/user" method="POST" onSubmit={this.onSubmit}>
+				{this.renderWarnings()}
+				<form className="mt-3" action="/api/user" method="POST" onSubmit={this.onSubmit}>
 				  <div className="form-group">
-				  	<label>Username</label>
+				  	<label>Korisničko ime</label>
 				  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Password</label>
+				  	<label>Lozinka</label>
 				  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Re-Enter Password</label>
+				  	<label>Ponovno unesite lozinku</label>
 				  	<input type="password" name="passwordMatch" className="form-control" value={this.state.passwordMatch} placeholder="Re-enter password" onChange={this.onChangePasswordMatch} />
 				  </div>
 				  <div className="form-group">
@@ -196,19 +222,19 @@ class RegisterComponent extends Component {
 				  	<input type="email" name="email" className="form-control" value={this.state.email} placeholder="Email" onChange={this.onChangeEmail} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Mobile Phone</label>
+				  	<label>Broj mobitela/telefona</label>
 				  	<input type="text" name="type" className="form-control" value={this.state.mobilePhone} placeholder="Mobile Phone" onChange={this.onChangeMobilePhone} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Address</label>
+				  	<label>Adresa/Lokacija</label>
 				  	<input type="text" name="type" className="form-control" value={this.state.address} placeholder="Address" onChange={this.onChangeAddress} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Type</label>
+				  	<label>Tip</label>
 				  	<input type="text" name="type" className="form-control" value={this.state.type} placeholder="Type" onChange={this.onChangeType} />
 				  </div>
 				  <div className="form-group">
-				  	<label>Description</label>
+				  	<label>Sadržaj oglasa</label>
 				  	<input type="text" name="type" className="form-control" value={this.state.description} placeholder="Description" onChange={this.onChangeDescription} />
 				  </div>
 				  {this.renderCategorySelect()}
