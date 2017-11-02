@@ -11,10 +11,12 @@ class LoginComponent extends Component {
 		this.state = {
 			username: '',
 			password: '',
+			errorMessage: '',
 		}
 
 		this.onChangeUsername = this.onChangeUsername.bind(this);
 		this.onChangePassword = this.onChangePassword.bind(this);
+		this.renderWarning = this.renderWarning.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
 
@@ -29,6 +31,14 @@ class LoginComponent extends Component {
 	onSubmit(event) {
 		console.log(this.state);
 		event.preventDefault();
+		if(!this.state.username) {
+			this.setState({ errorMessage: 'Molim vas da unesete korisničko ime.' });
+			return;
+		}
+		if(!this.state.password) {
+			this.setState({ errorMessage: 'Molim vas da unesete lozinku.' });
+			return;
+		}
 		fetch('http://localhost:3000/api/login', {
  			method: 'post',
   		headers: {
@@ -47,20 +57,36 @@ class LoginComponent extends Component {
   			this.props.logInUser(res.result);
   			console.log(this.props.user);
   			this.props.history.push("/profil");
+  		} else {
+  			console.log(res);
+  			this.setState({ errorMessage: res.result });
   		}
   	});
+	}
+
+	renderWarning() {
+		if(this.state.errorMessage) {
+			return (
+				<div className="alert alert-warning mt-3 mb-0" role="alert">
+  				<strong>Upozorenje!</strong> {this.state.errorMessage}
+				</div>
+			);
+		} else {
+			return null;
+		}
 	}
 
 	render() {
 		return (
 			<div className="container">
-				<form action="/api/login" method="POST" onSubmit={this.onSubmit}>
+				{this.renderWarning()}
+				<form className="mt-3" action="/api/login" method="POST" onSubmit={this.onSubmit}>
 				  <div className="form-group">
-				  	<label style={{ color: 'white' }}>Username</label>
+				  	<label style={{ color: 'black' }}>Korisničko ime</label>
 				  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
 				  </div>
 				  <div className="form-group">
-				  	<label style={{ color: 'white' }}>Password</label>
+				  	<label style={{ color: 'black' }}>Lozinka</label>
 				  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
 				  </div>
 				  <input type="submit" className="btn btn-primary" value="Submit" />

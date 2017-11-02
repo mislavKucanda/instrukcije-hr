@@ -98,13 +98,34 @@ router.get('/:resource/:id', function(req, res, next) {
 	});
 });
 
-router.post('/login', passport.authenticate('local'),
-  function(req, res) {
-  	res.json({
-  		confirmation: 'success',
-  		result: req.user,
-  	});
-  });
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { 
+    	return res.json({
+				confirmation: 'fail',
+				result: 'Došlo je do pogreške na serveru.',
+			}); 
+    }
+    if (!user) { 
+    	return res.json({
+    		confirmation: 'fail',
+    		result: 'Unesena kombinacija korisničkog imena i lozinke nije ispravna.',
+    	}); 
+    }
+    req.logIn(user, function(err) {
+      if (err) { 
+      	return res.json({
+      		confirmation: 'fail',
+      		result: 'Došlo je do pogreške na serveru.'
+      	}); 
+      }
+      return res.json({
+      	confirmation: 'success',
+      	result: user,
+      });
+    });
+  })(req, res, next);
+});
 
 router.post('/:resource', function(req, res, next) {
 	const { resource } = req.params;
