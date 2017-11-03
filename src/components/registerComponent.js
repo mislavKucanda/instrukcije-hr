@@ -203,45 +203,51 @@ class RegisterComponent extends Component {
 	render() {
 		return (
 			<div className="container">
-				{this.renderWarnings()}
-				<form className="mt-3" action="/api/user" method="POST" onSubmit={this.onSubmit}>
-				  <div className="form-group">
-				  	<label>Korisničko ime</label>
-				  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Lozinka</label>
-				  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Ponovno unesite lozinku</label>
-				  	<input type="password" name="passwordMatch" className="form-control" value={this.state.passwordMatch} placeholder="Re-enter password" onChange={this.onChangePasswordMatch} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Email</label>
-				  	<input type="email" name="email" className="form-control" value={this.state.email} placeholder="Email" onChange={this.onChangeEmail} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Broj mobitela/telefona</label>
-				  	<input type="text" name="type" className="form-control" value={this.state.mobilePhone} placeholder="Mobile Phone" onChange={this.onChangeMobilePhone} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Adresa/Lokacija</label>
-				  	<input type="text" name="type" className="form-control" value={this.state.address} placeholder="Address" onChange={this.onChangeAddress} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Tip</label>
-				  	<input type="text" name="type" className="form-control" value={this.state.type} placeholder="Type" onChange={this.onChangeType} />
-				  </div>
-				  <div className="form-group">
-				  	<label>Sadržaj oglasa</label>
-				  	<input type="text" name="type" className="form-control" value={this.state.description} placeholder="Description" onChange={this.onChangeDescription} />
-				  </div>
-				  {this.renderCategorySelect()}
-				  <input type="submit" className="btn btn-primary" value="Submit" />
-				</form>
-				<Dropzone onDrop={this.uploadFile} />
-				<img src={this.state.imgUrl} style={{ height: 200, width: 200 }}/>
+				<div className="row">
+					<div className="col-2" />
+					{this.renderWarnings()}
+					<div className="col-8">
+						<form className="mt-3" action="/api/user" method="POST" onSubmit={this.onSubmit}>
+						  <div className="form-group">
+						  	<label>Korisničko ime</label>
+						  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Lozinka</label>
+						  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Ponovno unesite lozinku</label>
+						  	<input type="password" name="passwordMatch" className="form-control" value={this.state.passwordMatch} placeholder="Re-enter password" onChange={this.onChangePasswordMatch} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Email</label>
+						  	<input type="email" name="email" className="form-control" value={this.state.email} placeholder="Email" onChange={this.onChangeEmail} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Broj mobitela/telefona</label>
+						  	<input type="text" name="type" className="form-control" value={this.state.mobilePhone} placeholder="Mobile Phone" onChange={this.onChangeMobilePhone} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Adresa/Lokacija</label>
+						  	<input type="text" name="type" className="form-control" value={this.state.address} placeholder="Address" onChange={this.onChangeAddress} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Tip</label>
+						  	<input type="text" name="type" className="form-control" value={this.state.type} placeholder="Type" onChange={this.onChangeType} />
+						  </div>
+						  <div className="form-group">
+						  	<label>Sadržaj oglasa</label>
+						  	<input type="text" name="type" className="form-control" value={this.state.description} placeholder="Description" onChange={this.onChangeDescription} />
+						  </div>
+						  {this.renderCategorySelect()}
+						  <input type="submit" className="btn btn-primary" value="Submit" />
+						</form>
+						<Dropzone onDrop={this.uploadFile} />
+						<img src={this.state.imgUrl} style={{ height: 200, width: 200 }}/>
+					</div>
+					<div className="col-2" />
+				</div>
 			</div>
 		);	
 	}

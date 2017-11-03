@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import actions from '../actions';
+import Const from '../../const';
 
 class LoginComponent extends Component {
 	constructor(props) {
@@ -108,9 +109,16 @@ class LoginComponent extends Component {
 	render() {
 		return (
 			<div className="container">
-				<div className="row mt-5">
+				<div className="row mt-3">
+					<div className="col-5" />
+					<div className="col-2">
+						<img src={Const.loginLogoUrl} style={{ width: 150, height: 150 }} className="img-fluid p-2" />
+					</div>
+					<div className="col-5" />
+				</div>
+				<div className="row">
 					<div className="col-lg-4 col-md-3 col-sm-2 col-xs-1" />
-					<div className="col-lg-4 col-md-6 col-sm-8 col-xs-10 mt-5 p-0">
+					<div className="col-lg-4 col-md-6 col-sm-8 col-xs-10 mt-2 p-0">
 						{this.renderWarning()}
 						<form className="mt-4" action="/api/login" method="POST" onSubmit={this.onSubmit}>
 						  <div className="form-group mt-3">
