@@ -12,10 +12,17 @@ class LoginComponent extends Component {
 			username: '',
 			password: '',
 			errorMessage: '',
+			buttonColor: '#36B39C',
+			usernameStyle: '#BFBFBF',
+			passwordStyle: '#BFBFBF',
 		}
 
 		this.onChangeUsername = this.onChangeUsername.bind(this);
 		this.onChangePassword = this.onChangePassword.bind(this);
+		this.onHooverButton = this.onHooverButton.bind(this);
+		this.onStopHooverButton = this.onStopHooverButton.bind(this);
+		this.onFocusInput = this.onFocusInput.bind(this);
+		this.onBlurInput = this.onBlurInput.bind(this);
 		this.renderWarning = this.renderWarning.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 	}
@@ -64,10 +71,32 @@ class LoginComponent extends Component {
   	});
 	}
 
+	onHooverButton() {
+		this.setState({ buttonColor: '#5c9b8e' });
+	}
+
+	onStopHooverButton() {
+		this.setState({ buttonColor: '#36B39C' });
+	}
+
+	onFocusInput(styleElem) {
+		if(styleElem === 'usernameStyle')
+			this.setState({ usernameStyle: '#36B39C'  });
+		else
+			this.setState({ passwordStyle: '#36B39C'  });
+	}
+
+	onBlurInput(styleElem) {
+		if(styleElem === 'usernameStyle')
+			this.setState({ usernameStyle: '#BFBFBF'  });
+		else
+			this.setState({ passwordStyle: '#BFBFBF'  });
+	}
+
 	renderWarning() {
 		if(this.state.errorMessage) {
 			return (
-				<div className="alert alert-warning mt-3 mb-0" role="alert">
+				<div className="alert alert-warning mb-0" role="alert">
   				<strong>Upozorenje!</strong> {this.state.errorMessage}
 				</div>
 			);
@@ -79,18 +108,51 @@ class LoginComponent extends Component {
 	render() {
 		return (
 			<div className="container">
-				{this.renderWarning()}
-				<form className="mt-3" action="/api/login" method="POST" onSubmit={this.onSubmit}>
-				  <div className="form-group">
-				  	<label style={{ color: 'black' }}>Korisničko ime</label>
-				  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
-				  </div>
-				  <div className="form-group">
-				  	<label style={{ color: 'black' }}>Lozinka</label>
-				  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
-				  </div>
-				  <input type="submit" className="btn btn-primary" value="Submit" />
-				</form>
+				<div className="row mt-5">
+					<div className="col-lg-4 col-md-3 col-sm-2 col-xs-1" />
+					<div className="col-lg-4 col-md-6 col-sm-8 col-xs-10 mt-5 p-0">
+						{this.renderWarning()}
+						<form className="mt-4" action="/api/login" method="POST" onSubmit={this.onSubmit}>
+						  <div className="form-group mt-3">
+						  	<input 
+						  		type="text" 
+						  		name="username" 
+						  		className="form-control" 
+						  		style={{ borderColor: this.state.usernameStyle }}
+						  		value={this.state.username} 
+						  		placeholder="Korisničko ime" 
+						  		onChange={this.onChangeUsername} 
+						  		onFocus={(elem) => this.onFocusInput('usernameStyle')}
+						  		onBlur={(elem) => this.onBlurInput('usernameStyle')}
+						  	/>
+						  </div>
+						  <div className="form-group mt-4">
+						  	<input 
+						  		type="password" 
+						  		name="password" 
+						  		className="form-control" 
+						  		style={{ borderColor: this.state.passwordStyle }}
+						  		value={this.state.password} 
+						  		placeholder="Lozinka" 
+						  		onChange={this.onChangePassword} 
+						  		onFocus={(elem) => this.onFocusInput('passwordStyle')}
+						  		onBlur={(elem) => this.onBlurInput('passwordStyle')}
+						  	/>
+						  </div>
+						  <div className="row m-0 mt-4">
+						  	<input 
+						  		type="submit" 
+						  		className="btn btn-success col-12" 
+						  		value="Potvrdi" 
+						  		style={{ backgroundColor: this.state.buttonColor, borderColor: '#5c9b8e' }}
+						  		onMouseOver={this.onHooverButton}
+              		onMouseOut={this.onStopHooverButton}
+						  	/>	
+						  </div>
+						</form>
+					</div>
+					<div className="col-lg-4 h-100 col-md-3 col-sm-2 col-xs-1" />
+				</div>
 			</div>
 		);	
 	}
