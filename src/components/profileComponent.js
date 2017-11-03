@@ -30,6 +30,7 @@ class ProfileComponent extends Component {
 			else
 				this.setState({ profile: user });
 		}
+		window.scrollTo(0, 0);
 	}
 	
 	renderDescriptionInfo() {
