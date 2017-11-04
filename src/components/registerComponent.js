@@ -15,7 +15,7 @@ class RegisterComponent extends Component {
 			errorMessages: [],
 			username: '',
 			email: '',
-			type: '',
+			type: 'instruktor',
 			password: '',
 			passwordMatch: '',
 			imgUrl: '',
@@ -24,11 +24,13 @@ class RegisterComponent extends Component {
 			mobilePhone: '',
 			firstCategory: '',
 			secondCategory: '',
+			hooverCategory: '',																						//those are registration categories
+			selectedCategory: 'INSTRUKTOR',																//those are registration categories
+			categoryInfo: 'Kao instruktor možete kreirati oglas i odabrati do dvije kategorije unutar kojih će se prikazivati. Također možete postavljati u kalendar slobodne termine za instrukcije kako bi ih studenti/učenici mogli rezervirati.',			//those are registration categories
 		}
 
 		this.onChangeUsername = this.onChangeUsername.bind(this);
 		this.onChangeEmail = this.onChangeEmail.bind(this);
-		this.onChangeType = this.onChangeType.bind(this);
 		this.onChangePassword = this.onChangePassword.bind(this);
 		this.onChangePasswordMatch = this.onChangePasswordMatch.bind(this);
 		this.onChangeDescription = this.onChangeDescription.bind(this);
@@ -37,7 +39,11 @@ class RegisterComponent extends Component {
 		this.renderCategorySelect = this.renderCategorySelect.bind(this);
 		this.onChangeFirstCategory = this.onChangeFirstCategory.bind(this);
 		this.onChangeSecondCategory = this.onChangeSecondCategory.bind(this);
+		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
+		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.renderWarnings = this.renderWarnings.bind(this);
+		this.renderRegistrationCategories = this.renderRegistrationCategories.bind(this);
+		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
 	}
@@ -60,10 +66,6 @@ class RegisterComponent extends Component {
 
 	onChangeEmail(event) {
 		this.setState({ email: event.target.value });
-	}
-
-	onChangeType(event) {
-		this.setState({ type: event.target.value });
 	}
 
 	onChangePassword(event) {
@@ -123,6 +125,26 @@ class RegisterComponent extends Component {
   			this.setState({ errorMessages: res.result });
   		} 
   	});
+	}
+
+	onMouseOverCategory(element, label) {
+		this.setState({ hooverCategory: label });
+	}
+
+	onMouseOutCategory() {
+		this.setState({ hooverCategory: '' });
+	}
+
+	onSelectCategory(element, label, categoryInfo, type) {
+		if(label === this.state.selectedCategory) {
+			this.setState({ selectedCategory: '' });
+			this.setState({ categoryInfo: '' });
+			this.setState({ type: '' });
+		} else {
+			this.setState({ selectedCategory: label });
+			this.setState({ categoryInfo });
+			this.setState({ type: type });
+		}
 	}
 
 	uploadFile(files) {
@@ -200,12 +222,73 @@ class RegisterComponent extends Component {
 		}
 	}
 
+	renderRegistrationCategories() {
+		console.log(Const.registrationCategories);
+		return(
+			<div className="row mt-3">
+				<div className="col-lg-2" />
+				<div className="col-lg-2 col-sm-3 col-xs-2">
+					{this.state.selectedCategory === 'INSTRUKTOR' 
+						? <p className="mb-0" style={{ fontSize: '0.7rem', textAlign: 'center' }}>{Const.registrationCategories[0].categoryInfo}</p> 
+						: null}
+				</div>
+	      {Const.registrationCategories.map((category, index) => {
+	      	let opacityLevel = 1;
+	      	if(category.label === this.state.hooverCategory) //if mouse hoovers the category, set opacity level to 0.5
+	      		opacityLevel = 0.5;
+
+	      	let backgroundColor = '#f1f2f2';
+	      	if(category.label === this.state.selectedCategory) //if mose clicks the category, set background to light green
+	      		backgroundColor = '#b5dbd2';
+
+	      	return(
+ 						<div 
+ 							className="col-lg-2 col-sm-3 col-xs-4" 
+ 							onMouseOver={(elem) => this.onMouseOverCategory(elem, category.label)} 
+ 							onMouseOut={this.onMouseOutCategory}
+ 							onClick={(elem) => this.onSelectCategory(elem, category.label, category.categoryInfo, category.type)}
+ 							key={index}
+ 							style={{ backgroundColor }}
+ 						>
+	        		<img src={category.url} style={{ opacity: opacityLevel }} className="img-fluid p-2" />
+	        		<p className="text-center">{category.label}</p>
+	        	</div>
+	      	);
+	      })}
+	      <div className="col-lg-2 col-sm-3 col-xs-2">
+					{this.state.selectedCategory === 'STUDENT / UČENIK' 
+						? <p className="mb-0" style={{ fontSize: '0.7rem', textAlign: 'center' }}>{Const.registrationCategories[1].categoryInfo}</p> 
+						: null}
+				</div>
+	      <div className="col-lg-2" />
+	    </div>
+		);
+	}
+
+	renderRegistrationCategoryInfo() {
+		return (
+			<div>
+				<p className="text-center mb-0 mt-3">NAJPRIJE ODABERITE DA LI STE INSTRUKTOR ILI STUDENT/UČENIK</p>
+				<hr className="mt-0" />
+			</div>
+		);
+	}
+
+
 	render() {
 		return (
 			<div className="container">
+				{this.renderRegistrationCategoryInfo()}
+				{this.renderRegistrationCategories()}
 				<div className="row">
 					<div className="col-2" />
-					{this.renderWarnings()}
+					<div className="col-8">
+						{this.renderWarnings()}
+					</div>
+					<div className="col-2" />
+				</div>
+				<div className="row">
+					<div className="col-2" />
 					<div className="col-8">
 						<form className="mt-3" action="/api/user" method="POST" onSubmit={this.onSubmit}>
 						  <div className="form-group">
@@ -231,10 +314,6 @@ class RegisterComponent extends Component {
 						  <div className="form-group">
 						  	<label>Adresa/Lokacija</label>
 						  	<input type="text" name="type" className="form-control" value={this.state.address} placeholder="Address" onChange={this.onChangeAddress} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Tip</label>
-						  	<input type="text" name="type" className="form-control" value={this.state.type} placeholder="Type" onChange={this.onChangeType} />
 						  </div>
 						  <div className="form-group">
 						  	<label>Sadržaj oglasa</label>

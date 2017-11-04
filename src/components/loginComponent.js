@@ -110,11 +110,7 @@ class LoginComponent extends Component {
 		return (
 			<div className="container">
 				<div className="row mt-3">
-					<div className="col-5" />
-					<div className="col-2">
-						<img src={Const.loginLogoUrl} style={{ width: 150, height: 150 }} className="img-fluid p-2" />
-					</div>
-					<div className="col-5" />
+						<img src={Const.loginLogoUrl} style={{ width: 150, height: 150 }} className="p-2 mx-auto" />
 				</div>
 				<div className="row">
 					<div className="col-lg-4 col-md-3 col-sm-2 col-xs-1" />
