@@ -43,6 +43,12 @@ class RegisterComponent extends Component {
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.renderWarnings = this.renderWarnings.bind(this);
 		this.renderRegistrationCategories = this.renderRegistrationCategories.bind(this);
+		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
+		this.renderCredentialsInput = this.renderCredentialsInput.bind(this);
+		this.renderUsernameAndPasswordInfo = this.renderUsernameAndPasswordInfo.bind(this);
+		this.renderContactInfo = this.renderContactInfo.bind(this);
+		this.renderDescriptionInput = this.renderDescriptionInput.bind(this);
+		this.renderContactInput = this.renderContactInput.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -123,6 +129,7 @@ class RegisterComponent extends Component {
   		} else {
   			console.log(res);
   			this.setState({ errorMessages: res.result });
+  			window.scrollTo(0, 0);
   		} 
   	});
 	}
@@ -183,7 +190,6 @@ class RegisterComponent extends Component {
 		});
 		return (
 			<div className="form-group">
-				<label>Odaberi dvije kategorije u kojima će se pojavljivati tvoj oglas.</label><br />
 				<label>Prva kategorija: </label>
 				<Select
 				  name="firstCategorySelect" 
@@ -207,14 +213,18 @@ class RegisterComponent extends Component {
 	renderWarnings() {
 		if(this.state.errorMessages) {
 			return (
-				<div>
-					{this.state.errorMessages.map((message, index) => {
-						return (
-							<div className="alert alert-warning mt-3 mb-0" role="alert" key={index} >
-	  						<strong>Upozorenje!</strong> {message}
-							</div>
-						);
-					})}
+				<div className="row">
+					<div className="col-2" />
+						<div className="col-8">
+							{this.state.errorMessages.map((message, index) => {
+								return (
+									<div className="alert alert-warning mt-3 mb-0" role="alert" key={index} >
+			  						<strong>Upozorenje!</strong> {message}
+									</div>
+								);
+							})}
+						</div>
+					<div className="col-2" />
 				</div>
 			);
 		} else {
@@ -268,64 +278,186 @@ class RegisterComponent extends Component {
 	renderRegistrationCategoryInfo() {
 		return (
 			<div>
-				<p className="text-center mb-0 mt-3">NAJPRIJE ODABERITE DA LI STE INSTRUKTOR ILI STUDENT/UČENIK</p>
+				<p className="text-center mb-0 mt-3">
+					NAJPRIJE ODABERITE DA LI STE INSTRUKTOR ILI STUDENT/UČENIK
+				</p>
 				<hr className="mt-0" />
 			</div>
 		);
 	}
 
+	renderDescriptionInfo() {
+		return (
+			<div>
+				<p className="text-center mb-0 mt-3">
+					UNESITE SADRŽAJ VAŠEG OGLASA I ODABERITE DO DVIJE 
+					KATEGORIJE U KOJIMA ĆE SE VAŠ OGLAS PRIKAZIVATI
+				</p>
+				<hr className="mt-0" />
+			</div>
+		);
+	}
+
+	renderUsernameAndPasswordInfo() {
+		return(
+			<div className="row mt-4">
+				<div className="col-lg-2" />
+					<div className="col-lg-8">
+						<p className="text-center mb-0 mt-3">
+							UNESITE KORISNIČKO IME I LOZINKU
+						</p>
+						<hr className="mt-0" />
+					</div>
+				<div className="col-lg-2" />
+			</div>
+		);
+	}
+
+	renderContactInfo() {
+		return(
+			<div className="row mt-2">
+				<div className="col-lg-2" />
+					<div className="col-lg-8">				
+						<p className="text-center mb-0 mt-3">
+							UNESITE PODATKE ZA KONTAKT
+						</p>
+						<hr className="mt-0" />
+					</div>	
+				<div className="col-lg-2" />
+			</div>
+		);
+	}
+
+	renderCredentialsInput() {
+		return(
+			<div className="row">
+				<div className="col-lg-4 col-sm-2" />
+					<div className="col-lg-4 col-sm-8">
+						<div className="form-group">
+							<input 
+								type="text"
+								className="form-control" 
+								value={this.state.username} 
+								placeholder="Korisničko ime" 
+								onChange={this.onChangeUsername}
+							/>
+						</div>
+						<div className="form-group">
+							<input 
+								type="password"
+								className="form-control" 
+								value={this.state.password} 
+								placeholder="Lozinka" 
+								onChange={this.onChangePassword} 
+							/>
+						</div>
+						<div className="form-group">
+							<input 
+								type="password"
+								className="form-control" 
+								value={this.state.passwordMatch} 
+								placeholder="Ponovljena lozinka" 
+								onChange={this.onChangePasswordMatch} 
+							/>
+						</div>
+					</div>
+				<div className="col-lg-4 col-sm-2" />
+			</div>
+		);
+	}
+
+	renderDescriptionInput(){
+		return(
+			<div className="form-group">
+				<label>Sadržaj oglasa:</label>
+				<textarea 
+					type="text" 
+					rows={4}
+					className="form-control" 
+					value={this.state.description} 
+					onChange={this.onChangeDescription}
+				/>
+			</div>
+		);
+	}	
+
+	renderContactInput() {
+		return(
+			<div className="row">
+				<div className="col-lg-4 col-sm-2" />
+					<div className="col-lg-4 col-sm-8">
+						<div className="form-group">
+							<input 
+								type="email" 
+								className="form-control" 
+								value={this.state.email} 
+								placeholder="Email" 
+								onChange={this.onChangeEmail} 
+							/>
+						</div>
+					<div className="form-group">
+						<input 
+							type="text" 
+							className="form-control" 
+							value={this.state.mobilePhone} 
+							placeholder="Broj mobitela/telefona" 
+							onChange={this.onChangeMobilePhone} 
+						/>
+					</div>
+					<div className="form-group">
+						<input 
+						  type="text" 
+						  className="form-control" 
+						  value={this.state.address} 
+						  placeholder="Adresa/Lokacija" 
+						  onChange={this.onChangeAddress} 
+						/>
+					</div>
+				</div>
+				<div className="col-lg-4 col-sm-2" />
+			</div>
+		);
+	}
 
 	render() {
 		return (
 			<div className="container">
 				{this.renderRegistrationCategoryInfo()}
 				{this.renderRegistrationCategories()}
+				{this.renderWarnings()}					
+				{this.renderUsernameAndPasswordInfo()}
+				{this.renderCredentialsInput()}
+				{this.renderContactInfo()}
+				{this.renderContactInput()}
+				{this.renderDescriptionInfo()}
+				<div className="row">
+					<div className="col-lg-3 col-sm-2" />
+					<div className="col-lg-6 col-sm-8">	
+						  {this.renderDescriptionInput()}
+						  {this.renderCategorySelect()}
+					</div>
+					<div className="col-lg-3 col-sm-2" />
+				</div>
+
 				<div className="row">
 					<div className="col-2" />
 					<div className="col-8">
-						{this.renderWarnings()}
+						  <Dropzone onDrop={this.uploadFile} />
+							<img src={this.state.imgUrl} style={{ height: 200, width: 200 }}/>
 					</div>
 					<div className="col-2" />
 				</div>
 				<div className="row">
-					<div className="col-2" />
-					<div className="col-8">
-						<form className="mt-3" action="/api/user" method="POST" onSubmit={this.onSubmit}>
-						  <div className="form-group">
-						  	<label>Korisničko ime</label>
-						  	<input type="text" name="username" className="form-control" value={this.state.username} placeholder="Username" onChange={this.onChangeUsername} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Lozinka</label>
-						  	<input type="password" name="password" className="form-control" value={this.state.password} placeholder="Enter password" onChange={this.onChangePassword} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Ponovno unesite lozinku</label>
-						  	<input type="password" name="passwordMatch" className="form-control" value={this.state.passwordMatch} placeholder="Re-enter password" onChange={this.onChangePasswordMatch} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Email</label>
-						  	<input type="email" name="email" className="form-control" value={this.state.email} placeholder="Email" onChange={this.onChangeEmail} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Broj mobitela/telefona</label>
-						  	<input type="text" name="type" className="form-control" value={this.state.mobilePhone} placeholder="Mobile Phone" onChange={this.onChangeMobilePhone} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Adresa/Lokacija</label>
-						  	<input type="text" name="type" className="form-control" value={this.state.address} placeholder="Address" onChange={this.onChangeAddress} />
-						  </div>
-						  <div className="form-group">
-						  	<label>Sadržaj oglasa</label>
-						  	<input type="text" name="type" className="form-control" value={this.state.description} placeholder="Description" onChange={this.onChangeDescription} />
-						  </div>
-						  {this.renderCategorySelect()}
-						  <input type="submit" className="btn btn-primary" value="Submit" />
-						</form>
-						<Dropzone onDrop={this.uploadFile} />
-						<img src={this.state.imgUrl} style={{ height: 200, width: 200 }}/>
+					<div className="col-6" />
+					<div className="col-3">
+						<input 
+							type="submit" 
+							className="btn btn-primary" 
+							value="Registracija" 
+							onClick={this.onSubmit} 
+						/>
 					</div>
-					<div className="col-2" />
+					<div className="col-3" />
 				</div>
 			</div>
 		);	
