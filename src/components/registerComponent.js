@@ -45,7 +45,6 @@ class RegisterComponent extends Component {
 		this.renderRegistrationCategories = this.renderRegistrationCategories.bind(this);
 		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
 		this.renderCredentialsInput = this.renderCredentialsInput.bind(this);
-		this.renderUsernameAndPasswordInfo = this.renderUsernameAndPasswordInfo.bind(this);
 		this.renderContactInfo = this.renderContactInfo.bind(this);
 		this.renderDescriptionInput = this.renderDescriptionInput.bind(this);
 		this.renderContactInput = this.renderContactInput.bind(this);
@@ -127,7 +126,6 @@ class RegisterComponent extends Component {
 	  		this.props.logInUser(res.result);
 	  		this.props.history.push("/profil");
   		} else {
-  			console.log(res);
   			this.setState({ errorMessages: res.result });
   			window.scrollTo(0, 0);
   		} 
@@ -233,7 +231,6 @@ class RegisterComponent extends Component {
 	}
 
 	renderRegistrationCategories() {
-		console.log(Const.registrationCategories);
 		return(
 			<div className="row mt-3">
 				<div className="col-lg-2" />
@@ -298,28 +295,13 @@ class RegisterComponent extends Component {
 		);
 	}
 
-	renderUsernameAndPasswordInfo() {
+	renderContactInfo(infoText, topMarginStyle) {
 		return(
-			<div className="row mt-4">
-				<div className="col-lg-2" />
-					<div className="col-lg-8">
-						<p className="text-center mb-0 mt-3">
-							UNESITE KORISNIČKO IME I LOZINKU
-						</p>
-						<hr className="mt-0" />
-					</div>
-				<div className="col-lg-2" />
-			</div>
-		);
-	}
-
-	renderContactInfo() {
-		return(
-			<div className="row mt-2">
+			<div className={'row ' + topMarginStyle}>
 				<div className="col-lg-2" />
 					<div className="col-lg-8">				
 						<p className="text-center mb-0 mt-3">
-							UNESITE PODATKE ZA KONTAKT
+							{infoText}
 						</p>
 						<hr className="mt-0" />
 					</div>	
@@ -425,9 +407,9 @@ class RegisterComponent extends Component {
 				{this.renderRegistrationCategoryInfo()}
 				{this.renderRegistrationCategories()}
 				{this.renderWarnings()}					
-				{this.renderUsernameAndPasswordInfo()}
+				{this.renderContactInfo('UNESITE KORISNIČKO IME I LOZINKU', 'mt-4')}
 				{this.renderCredentialsInput()}
-				{this.renderContactInfo()}
+				{this.renderContactInfo('UNESITE PODATKE ZA KONTAKT', 'mt-2')}
 				{this.renderContactInput()}
 				{this.renderDescriptionInfo()}
 				<div className="row">
@@ -438,12 +420,13 @@ class RegisterComponent extends Component {
 					</div>
 					<div className="col-lg-3 col-sm-2" />
 				</div>
-
+				{this.renderContactInfo('ZA KRAJ ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU', 'mt-1')}
 				<div className="row">
 					<div className="col-2" />
 					<div className="col-8">
-						  <Dropzone onDrop={this.uploadFile} />
-							<img src={this.state.imgUrl} style={{ height: 200, width: 200 }}/>
+							{this.state.imgUrl
+								? <img className="mx-auto" src={this.state.imgUrl} style={{ height: 200, width: 200 }}/> 
+								: <div className="mx-auto"><Dropzone onDrop={this.uploadFile} /></div>}
 					</div>
 					<div className="col-2" />
 				</div>
