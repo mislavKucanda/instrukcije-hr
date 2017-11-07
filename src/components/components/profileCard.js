@@ -25,18 +25,33 @@ export default class ProfileCard extends Component {
 
 	render() {
 		const { profile } = this.props;
-		return(
-			<div className="card mb-3">
-		    {this.renderProfileImage(profile.imgUrl)}
-		    <div className="card-block p-2">
-		      	<h4 className="card-title text-center">{profile.username}</h4>
-		      	<p className="card-text">{profile.description}</p>
-		    </div>
-		    <ul className="list-group list-group-flush">
+		const profileContactInfo = (
+			(profile.address !== '' && profile.address !== null) ||
+			(profile.mobilePhone !== '' && profile.mobilePhone !== null) ||
+			(profile.email !== '' && profile.email !== null) 
+			? (
+				<ul className="list-group list-group-flush">
 		    	{this.renderProfileInfo(Const.profileLogos.location, profile.address)}
 		    	{this.renderProfileInfo(Const.profileLogos.phone, profile.mobilePhone)}
 		    	{this.renderProfileInfo(Const.profileLogos.email, profile.email)}
 		    </ul>
+			) : null);
+
+		const profileInfo = (
+			(profile.description !== '' && profile.description !== null) ||
+			(profile.username !== '' && profile.username !== null))
+			? (
+				<div className="card-block p-2">
+		      	<h4 className="card-title text-center">{profile.username}</h4>
+		      	<p className="card-text">{profile.description}</p>
+		    </div>
+			) : null;
+
+		return(
+			<div className="card">
+		    {this.renderProfileImage(profile.imgUrl)}
+		  	{profileInfo}
+		    {profileContactInfo}
 		  </div>
 	  );
 	}

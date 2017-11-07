@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
-import Select from 'react-select';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -55,6 +54,7 @@ class RegisterComponent extends Component {
 		this.renderDescriptionInput = this.renderDescriptionInput.bind(this);
 		this.renderContactInput = this.renderContactInput.bind(this);
 		this.renderProfileDisplay = this.renderProfileDisplay.bind(this);
+		this.renderRegisterButton = this.renderRegisterButton.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -89,13 +89,11 @@ class RegisterComponent extends Component {
 	}
 
 	onChangeFirstCategory(event) {
-		this.setState({ firstCategory: event.value });
-		console.log(this.state);
+		this.setState({ firstCategory: event.target.value });
 	}
 
 	onChangeSecondCategory(event) {
-		this.setState({ secondCategory: event.value });
-		console.log(this.state);
+		this.setState({ secondCategory: event.target.value });
 	}
 
 	onSubmit(event) {
@@ -201,35 +199,45 @@ class RegisterComponent extends Component {
 		this.setState({ imgUrl: '' });
 	}
 
-	renderCategorySelect() {
-		let optionsFirst = [];
-		Const.categories.map((category, index) => {
-			if(category.label != this.state.firstCategory && category.label != this.state.secondCategory)
-				optionsFirst.push({ value: category.label, label: category.label }); 
-		});
-		let optionsSecond = [];
-		Const.categories.map((category, index) => {
-			if(category.label != this.state.firstCategory && category.label != this.state.secondCategory)
-				optionsSecond.push({ value: category.label, label: category.label }); 
-		});
+	renderCategorySelect() {		
 		return (
 			<div>
 				<label>Prva kategorija: </label>
-				<Select
-				  name="firstCategorySelect"
-				  value={{ value: this.state.firstCategory, label: this.state.firstCategory }}
+				<select 
 					className="form-control" 
+					value={this.state.firstCategory} 
 					onChange={this.onChangeFirstCategory}
-					options={optionsFirst}
-				/>
+				>
+				  <option value="">Odaberi...</option>
+					<option value="MATEMATIKA">MATEMATIKA</option>
+					<option value="KEMIJA">KEMIJA</option>
+					<option value="HRVATSKI">HRVATSKI</option>
+					<option value="MATURA">MATURA</option>
+					<option value="STROJARSTVO">STROJARSTVO</option>
+					<option value="STRANI JEZICI">STRANI JEZICI</option>
+					<option value="GLAZBENI">GLAZBENI</option>
+					<option value="LEKTORIRANJE">LEKTORIRANJE</option>
+					<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
+					<option value="BIOLOGIJA">BIOLOGIJA</option>
+				</select>
 				<label>Druga kategorija: </label>
-				<Select
-				  name="secondCategorySelect" 
-				  className="form-control" 
-				  value={{ value: this.state.secondCategory, label: this.state.secondCategory }}
+				<select 
+					className="form-control" 
+					value={this.state.secondCategory} 
 					onChange={this.onChangeSecondCategory}
-					options={optionsSecond}
-				/>
+				>
+				  <option value="">Odaberi...</option>
+					<option value="MATEMATIKA">MATEMATIKA</option>
+					<option value="KEMIJA">KEMIJA</option>
+					<option value="HRVATSKI">HRVATSKI</option>
+					<option value="MATURA">MATURA</option>
+					<option value="STROJARSTVO">STROJARSTVO</option>
+					<option value="STRANI JEZICI">STRANI JEZICI</option>
+					<option value="GLAZBENI">GLAZBENI</option>
+					<option value="LEKTORIRANJE">LEKTORIRANJE</option>
+					<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
+					<option value="BIOLOGIJA">BIOLOGIJA</option>
+				</select>
 			</div>
 		);
 	}
@@ -411,15 +419,18 @@ class RegisterComponent extends Component {
 							onChange={this.onChangeMobilePhone} 
 						/>
 					</div>
-					<div className="form-group">
-						<input 
-						  type="text" 
-						  className="form-control" 
-						  value={this.state.address} 
-						  placeholder="Adresa/Lokacija" 
-						  onChange={this.onChangeAddress} 
-						/>
-					</div>
+					{this.state.type === 'instruktor'
+						? (
+							<div className="form-group">
+								<input 
+								  type="text" 
+								  className="form-control" 
+								  value={this.state.address} 
+								  placeholder="Adresa/Lokacija" 
+								  onChange={this.onChangeAddress} 
+								/>
+							</div>
+						) : null}
 				</div>
 				<div className="col-lg-4 col-sm-2" />
 			</div>
@@ -443,7 +454,10 @@ class RegisterComponent extends Component {
 						/>
 					</div>
 					<div className="col-lg-4 col-md-5 col-sm-7">
-						<ProfileCard profile={{ imgUrl, address, mobilePhone, email, username, description }} />
+						<ProfileCard profile={this.state.type === 'instruktor'
+							? { imgUrl, address, mobilePhone, email, username, description }
+							: { imgUrl, address:'', mobilePhone:'', email:'', username:'', description:'' }} 
+						/>
 					</div>
 					<div className="col-lg-4 col-md-3 col-sm-1" />
 			</div>
@@ -456,7 +470,9 @@ class RegisterComponent extends Component {
 					<div className="col-lg-4 col-sm-3" />
 					<div className="col-lg-4 col-sm-6" align="center">
 						<Dropzone onDrop={this.uploadFile}>
-							<p>Kliknite za odabir profilne fotografije</p>
+							<div className="pt-4">
+								<p className="pt-5">Kliknite za odabir profilne fotografije</p>
+							</div>
 						</Dropzone>
 					</div>
 					<div className="col-lg-4 col-sm-3" />
@@ -464,45 +480,77 @@ class RegisterComponent extends Component {
 		);
 	}
 
-	render() {
-		return (
-			<div className="container">
-				{this.renderRegistrationCategoryInfo()}
-				{this.renderRegistrationCategories()}
-				{this.renderWarnings()}					
-				{this.renderContactInfo('UNESITE KORISNIČKO IME I LOZINKU', 'mt-4')}
-				{this.renderCredentialsInput()}
-				{this.renderContactInfo('UNESITE PODATKE ZA KONTAKT', 'mt-2')}
-				{this.renderContactInput()}
-				{this.renderDescriptionInfo('UNESITE SADRŽAJ VAŠEG OGLASA I ODABERITE DO DVIJE KATEGORIJE U KOJIMA ĆE SE VAŠ OGLAS PRIKAZIVATI')}
-				<div className="row">
-					<div className="col-lg-3 col-sm-2" />
-					<div className="col-lg-6 col-sm-8">	
-						  {this.renderDescriptionInput()}
-						  {this.renderCategorySelect()}
-					</div>
-					<div className="col-lg-3 col-sm-2" />
-				</div>
-				{this.renderDescriptionInfo('ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU AKO STE ZADOVOLJNI IZGLEDOM VAŠEG OGLASA')}
-				{this.state.imgUrl
-					? this.renderProfileDisplay() 
-					: this.renderProfileInput()
-				}	
-				<div className="row mt-3 mb-5">
-					<div className="col-lg-3 col-sm-2" />
+	renderRegisterButton() {
+		return(
+			<div className="row mt-3 mb-5">
+				<div className="col-lg-3 col-sm-2" />
 					<div className="col-lg-6 col-sm-8" align="center">
 						<input 
 							type="submit" 
 							className="btn btn-primary" 
 							style={{ backgroundColor: this.state.registerButtonColor, borderColor: '#5c9b8e' }}
-							value="Zadovoljan sam svojim oglasom, REGISTRIRAJ ME!" 
+							value={this.state.type === 'instruktor' ? 'Zadovoljan sam svojim oglasom, REGISTRIRAJ ME!' : 'REGISTRACIJA'} 
 							onClick={this.onSubmit} 
 							onMouseOver={() => this.onHooverButton('registrationButton')}
               onMouseOut={() => this.onStopHooverButton('registrationButton')}
 						/>
 					</div>
-					<div className="col-lg-3 col-sm-2" />
+				<div className="col-lg-3 col-sm-2" />
+			</div>
+		);
+	}
+
+	render() {
+
+		const userInformationInput = this.state.type === 'instruktor' || this.state.type === 'student'
+			? (
+				<div>
+					{this.renderContactInfo('UNESITE KORISNIČKO IME I LOZINKU', 'mt-4')}
+					{this.renderCredentialsInput()}
+					{this.renderContactInfo('UNESITE PODATKE ZA KONTAKT', 'mt-2')}
+					{this.renderContactInput()}
 				</div>
+			) : null;
+
+		const userDescriptionInput = this.state.type === 'instruktor'
+			? (
+				<div>
+					{this.renderDescriptionInfo('UNESITE SADRŽAJ VAŠEG OGLASA I ODABERITE DO DVIJE KATEGORIJE U KOJIMA ĆE SE VAŠ OGLAS PRIKAZIVATI')}
+					<div className="row">
+						<div className="col-lg-3 col-sm-2" />
+						<div className="col-lg-6 col-sm-8">	
+						  {this.renderDescriptionInput()}
+						  {this.renderCategorySelect()}
+						</div>
+						<div className="col-lg-3 col-sm-2" />
+					</div>
+				</div>
+			) : null;
+
+		const selectPictureDescriptionText = this.state.type === 'instruktor' 
+			? 'ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU AKO STE ZADOVOLJNI IZGLEDOM VAŠEG OGLASA'
+			: 'ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU';
+
+		const userPictureInput = this.state.type === 'instruktor' || this.state.type === 'student'
+			? (
+				<div>
+					{this.renderDescriptionInfo(selectPictureDescriptionText)}
+					{this.state.imgUrl
+						? this.renderProfileDisplay() 
+						: this.renderProfileInput()
+					}	
+					{this.renderRegisterButton()}
+				</div>
+			) : null;
+
+		return (
+			<div className="container">
+				{this.renderRegistrationCategoryInfo()}
+				{this.renderRegistrationCategories()}
+				{this.renderWarnings()}
+				{userInformationInput}
+				{userDescriptionInput}
+				{userPictureInput}
 			</div>
 		);	
 	}
