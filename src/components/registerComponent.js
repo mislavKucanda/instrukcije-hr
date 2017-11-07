@@ -6,12 +6,15 @@ import { connect } from 'react-redux';
 
 import actions from '../actions';
 import Const from '../../const';
+import ProfileCard from './components/profileCard';
 
 class RegisterComponent extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
+			registerButtonColor: '#36B39C',
+			cancelPictureButtonColor: '#36B39C',
 			errorMessages: [],
 			username: '',
 			email: '',
@@ -41,6 +44,9 @@ class RegisterComponent extends Component {
 		this.onChangeSecondCategory = this.onChangeSecondCategory.bind(this);
 		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
+		this.onHooverButton = this.onHooverButton.bind(this);
+		this.onStopHooverButton = this.onStopHooverButton.bind(this);
+		this.onCancelPictureSelect = this.onCancelPictureSelect.bind(this);
 		this.renderWarnings = this.renderWarnings.bind(this);
 		this.renderRegistrationCategories = this.renderRegistrationCategories.bind(this);
 		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
@@ -48,6 +54,7 @@ class RegisterComponent extends Component {
 		this.renderContactInfo = this.renderContactInfo.bind(this);
 		this.renderDescriptionInput = this.renderDescriptionInput.bind(this);
 		this.renderContactInput = this.renderContactInput.bind(this);
+		this.renderProfileDisplay = this.renderProfileDisplay.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -152,6 +159,20 @@ class RegisterComponent extends Component {
 		}
 	}
 
+	onHooverButton(component) {
+		if(component === 'registrationButton')
+			this.setState({ registerButtonColor: '#5c9b8e' });
+		else if (component === 'cancelPictureButton') 
+			this.setState({ cancelPictureButtonColor: '#5c9b8e' });
+	}
+
+	onStopHooverButton(component) {
+		if(component === 'registrationButton')
+			this.setState({ registerButtonColor: '#36B39C' });
+		else if (component === 'cancelPictureButton') 
+			this.setState({ cancelPictureButtonColor: '#36B39C' });
+	}
+
 	uploadFile(files) {
 		const file = files[0];
 		const { CLOUDINARY_URL, CLOUDINARY_UPLOAD_PRESET } = Const;
@@ -175,6 +196,11 @@ class RegisterComponent extends Component {
 		});
 	}
 
+	onCancelPictureSelect(event) {
+		event.preventDefault();
+		this.setState({ imgUrl: '' });
+	}
+
 	renderCategorySelect() {
 		let optionsFirst = [];
 		Const.categories.map((category, index) => {
@@ -187,10 +213,10 @@ class RegisterComponent extends Component {
 				optionsSecond.push({ value: category.label, label: category.label }); 
 		});
 		return (
-			<div className="form-group">
+			<div>
 				<label>Prva kategorija: </label>
 				<Select
-				  name="firstCategorySelect" 
+				  name="firstCategorySelect"
 				  value={{ value: this.state.firstCategory, label: this.state.firstCategory }}
 					className="form-control" 
 					onChange={this.onChangeFirstCategory}
@@ -199,8 +225,8 @@ class RegisterComponent extends Component {
 				<label>Druga kategorija: </label>
 				<Select
 				  name="secondCategorySelect" 
+				  className="form-control" 
 				  value={{ value: this.state.secondCategory, label: this.state.secondCategory }}
-					className="form-control" 
 					onChange={this.onChangeSecondCategory}
 					options={optionsSecond}
 				/>
@@ -283,12 +309,11 @@ class RegisterComponent extends Component {
 		);
 	}
 
-	renderDescriptionInfo() {
+	renderDescriptionInfo(text) {
 		return (
 			<div>
 				<p className="text-center mb-0 mt-3">
-					UNESITE SADRŽAJ VAŠEG OGLASA I ODABERITE DO DVIJE 
-					KATEGORIJE U KOJIMA ĆE SE VAŠ OGLAS PRIKAZIVATI
+					{text}
 				</p>
 				<hr className="mt-0" />
 			</div>
@@ -401,6 +426,44 @@ class RegisterComponent extends Component {
 		);
 	}
 
+	renderProfileDisplay() {
+		const { imgUrl, address, mobilePhone, email, username, description } = this.state;
+		return(
+			<div className="row">
+					<div className="col-lg-1 col-md-0 col-sm-0" />
+					<div className="col-lg-3 col-md-4 col-sm-4">
+						<input
+							type="submit" 
+							className="btn btn-primary" 
+							style={{ backgroundColor: this.state.cancelPictureButtonColor, borderColor: '#5c9b8e' }}
+							value="Promijeni fotografiju"
+							onClick={this.onCancelPictureSelect}
+							onMouseOver={() => this.onHooverButton('cancelPictureButton')}
+              onMouseOut={() => this.onStopHooverButton('cancelPictureButton')}
+						/>
+					</div>
+					<div className="col-lg-4 col-md-5 col-sm-7">
+						<ProfileCard profile={{ imgUrl, address, mobilePhone, email, username, description }} />
+					</div>
+					<div className="col-lg-4 col-md-3 col-sm-1" />
+			</div>
+		);
+	}
+
+	renderProfileInput() {
+		return(
+			<div className="row">
+					<div className="col-lg-4 col-sm-3" />
+					<div className="col-lg-4 col-sm-6" align="center">
+						<Dropzone onDrop={this.uploadFile}>
+							<p>Kliknite za odabir profilne fotografije</p>
+						</Dropzone>
+					</div>
+					<div className="col-lg-4 col-sm-3" />
+			</div>
+		);
+	}
+
 	render() {
 		return (
 			<div className="container">
@@ -411,7 +474,7 @@ class RegisterComponent extends Component {
 				{this.renderCredentialsInput()}
 				{this.renderContactInfo('UNESITE PODATKE ZA KONTAKT', 'mt-2')}
 				{this.renderContactInput()}
-				{this.renderDescriptionInfo()}
+				{this.renderDescriptionInfo('UNESITE SADRŽAJ VAŠEG OGLASA I ODABERITE DO DVIJE KATEGORIJE U KOJIMA ĆE SE VAŠ OGLAS PRIKAZIVATI')}
 				<div className="row">
 					<div className="col-lg-3 col-sm-2" />
 					<div className="col-lg-6 col-sm-8">	
@@ -420,27 +483,25 @@ class RegisterComponent extends Component {
 					</div>
 					<div className="col-lg-3 col-sm-2" />
 				</div>
-				{this.renderContactInfo('ZA KRAJ ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU', 'mt-1')}
-				<div className="row">
-					<div className="col-2" />
-					<div className="col-8">
-							{this.state.imgUrl
-								? <img className="mx-auto" src={this.state.imgUrl} style={{ height: 200, width: 200 }}/> 
-								: <div className="mx-auto"><Dropzone onDrop={this.uploadFile} /></div>}
-					</div>
-					<div className="col-2" />
-				</div>
-				<div className="row">
-					<div className="col-6" />
-					<div className="col-3">
+				{this.renderDescriptionInfo('ODABERITE PROFILNU FOTOGRAFIJU I DOVRŠITE REGISTRACIJU AKO STE ZADOVOLJNI IZGLEDOM VAŠEG OGLASA')}
+				{this.state.imgUrl
+					? this.renderProfileDisplay() 
+					: this.renderProfileInput()
+				}	
+				<div className="row mt-3 mb-5">
+					<div className="col-lg-3 col-sm-2" />
+					<div className="col-lg-6 col-sm-8" align="center">
 						<input 
 							type="submit" 
 							className="btn btn-primary" 
-							value="Registracija" 
+							style={{ backgroundColor: this.state.registerButtonColor, borderColor: '#5c9b8e' }}
+							value="Zadovoljan sam svojim oglasom, REGISTRIRAJ ME!" 
 							onClick={this.onSubmit} 
+							onMouseOver={() => this.onHooverButton('registrationButton')}
+              onMouseOut={() => this.onStopHooverButton('registrationButton')}
 						/>
 					</div>
-					<div className="col-3" />
+					<div className="col-lg-3 col-sm-2" />
 				</div>
 			</div>
 		);	

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 
+import ProfileCard from './components/profileCard';
 import actions from '../actions';
 import Const from '../../const';
 
@@ -19,8 +20,6 @@ class HomeComponent extends Component {
 		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
-		this.renderProfileInfo = this.renderProfileInfo.bind(this);
-		this.renderProfileImage = this.renderProfileImage.bind(this);
 	}
 
 	componentDidMount() {
@@ -87,25 +86,6 @@ class HomeComponent extends Component {
 		});
 	}
 
-	renderProfileInfo(iconUrl, info) {
-		if (info !== null && info !== '') {
-	     return (
-		    <li className="list-group-item p-1">
-		    	<img src={iconUrl} style={{ width:50, height: 50 }} alt=""/>
-		    	<span className="pl-1">{info}</span>
-		    </li>
-		   );
-	  }
-	  return null;
-	}
-
-	renderProfileImage(imgUrl) {
-		if(imgUrl !== null && imgUrl !== '') {
-			return <img className="card-img-top img-fluid" src={imgUrl} alt="" />
-		}
-		return null;
-	}
-
 	renderProfiles() {
 		const { profiles } = this.props;
 		return (
@@ -114,18 +94,7 @@ class HomeComponent extends Component {
 					if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
 						return(
 							<Link to={"/profil/" + profile._id} key={index}>
-								<div className="card mb-3" key={index}>
-	    						{this.renderProfileImage(profile.imgUrl)}
-	    						<div className="card-block p-2">
-	      						<h4 className="card-title text-center">{profile.username}</h4>
-	      						<p className="card-text">{profile.description}</p>
-	    						</div>
-	    						<ul className="list-group list-group-flush">
-	    							{this.renderProfileInfo(Const.profileLogos.location, profile.address)}
-	    							{this.renderProfileInfo(Const.profileLogos.phone, profile.mobilePhone)}
-	    							{this.renderProfileInfo(Const.profileLogos.email, profile.email)}
-	    						</ul>
-	  						</div>
+								<ProfileCard profile={profile} />
 	  					</Link>
 						);
 				})}
