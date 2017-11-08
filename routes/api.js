@@ -146,7 +146,13 @@ router.post('/:resource', function(req, res, next) {
 		req.checkBody('username', 'Korisničko ime mora imati između 5 i 15 znakova.').len(5, 15);
 		req.checkBody('password', 'Lozinka je obavezno polje.').notEmpty();
 		req.checkBody('password', 'Lozinka mora imati između 5 i 20 znakova.').len(5,20);
-		req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+		if(req.body.type === 'instruktor') {
+			req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+		}
+		if(req.body.type === 'student') {
+			req.checkBody('educationLevel', 'Obavezno unesite razinu obrazovanja.').notEmpty();
+			req.checkBody('educationGrade', 'Obavezno unesite trenutnu godinu obrazovanja.').notEmpty();
+		}
 		req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
 		req.checkBody('type', 'Moguće vrijednosti za uneseni tip su instruktor ili student.').isIn(['instruktor','student']);
 		req.checkBody('password', 'Unesene lozinke se ne podudaraju.').equals(req.body.passwordMatch);

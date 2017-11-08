@@ -19,6 +19,9 @@ var UserSchema = new Schema({
   paidThisMonth: { type: Boolean, default: false },
   paidNextMonth: { type: Boolean, default: false },
   dateRegistered: { type: Date, default: Date.now },
+  educationLevel: { type: String, default: '' },
+  educationGrade: { type: String, default: '' },
+  institutionName: { type: String, default: '' },
 });
 
 module.exports = mongoose.model('UserSchema', UserSchema); 

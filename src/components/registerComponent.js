@@ -20,6 +20,9 @@ class RegisterComponent extends Component {
 			type: 'instruktor',
 			password: '',
 			passwordMatch: '',
+			educationLevel: '',
+			educationGrade: '',
+			institutionName: '',
 			imgUrl: '',
 			description: '',
 			address: '',
@@ -44,8 +47,11 @@ class RegisterComponent extends Component {
 		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.onHooverButton = this.onHooverButton.bind(this);
+		this.onChangeEducationGrade = this.onChangeEducationGrade.bind(this);
 		this.onStopHooverButton = this.onStopHooverButton.bind(this);
 		this.onCancelPictureSelect = this.onCancelPictureSelect.bind(this);
+		this.onChangeEducationLevel = this.onChangeEducationLevel.bind(this);
+		this.onChangeInstitutionName = this.onChangeInstitutionName.bind(this);
 		this.renderWarnings = this.renderWarnings.bind(this);
 		this.renderRegistrationCategories = this.renderRegistrationCategories.bind(this);
 		this.renderDescriptionInfo = this.renderDescriptionInfo.bind(this);
@@ -55,6 +61,7 @@ class RegisterComponent extends Component {
 		this.renderContactInput = this.renderContactInput.bind(this);
 		this.renderProfileDisplay = this.renderProfileDisplay.bind(this);
 		this.renderRegisterButton = this.renderRegisterButton.bind(this);
+		this.renderEducationInput = this.renderEducationInput.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
@@ -96,6 +103,20 @@ class RegisterComponent extends Component {
 		this.setState({ secondCategory: event.target.value });
 	}
 
+	onChangeEducationLevel(event) {
+		this.setState({ educationLevel: event.target.value });
+		this.setState({ educationGrade: '' });
+		this.setState({ institutionName: '' });
+	}
+
+	onChangeEducationGrade(event) {
+		this.setState({ educationGrade: event.target.value });
+	}
+
+	onChangeInstitutionName(event) {
+		this.setState({ institutionName: event.target.value });
+	}
+
 	onSubmit(event) {
 		console.log(this.state);
 		event.preventDefault();
@@ -106,6 +127,32 @@ class RegisterComponent extends Component {
 			&& this.state.firstCategory !== this.state.secondCategory)
 			categoryArray.push(this.state.secondCategory)
 
+		const userForRegister = this.state.type === 'instruktor'
+		? {
+			username: this.state.username,
+		  email: this.state.email,
+		  type: this.state.type,
+		  password: this.state.password,
+		  passwordMatch: this.state.passwordMatch,
+		  imgUrl: this.state.imgUrl,
+		  description: this.state.description,
+		  mobilePhone: this.state.mobilePhone,
+		  address: this.state.address,
+		  category: categoryArray,
+		} 
+		: {
+			username: this.state.username,
+		  email: this.state.email,
+		  type: this.state.type,
+		  password: this.state.password,
+		  passwordMatch: this.state.passwordMatch,
+		  imgUrl: this.state.imgUrl,
+		  mobilePhone: this.state.mobilePhone,
+		  educationLevel: this.state.educationLevel,
+			educationGrade: this.state.educationGrade,
+			institutionName: this.state.institutionName,
+		};
+
 		fetch('http://localhost:3000/api/user', {
  			method: 'post',
   		headers: {
@@ -113,18 +160,7 @@ class RegisterComponent extends Component {
     		'Content-Type': 'application/json'
   		},
   		credentials: 'include',
-  		body: JSON.stringify({
-  			username: this.state.username,
-		  	email: this.state.email,
-		  	type: this.state.type,
-		  	password: this.state.password,
-		  	passwordMatch: this.state.passwordMatch,
-		  	imgUrl: this.state.imgUrl,
-		  	description: this.state.description,
-		  	mobilePhone: this.state.mobilePhone,
-		  	address: this.state.address,
-		  	category: categoryArray,
-  		})
+  		body: JSON.stringify(userForRegister)
 		}).then(res => res.json())
   	.then(res => {
   		if(res.confirmation === 'success') {
@@ -500,6 +536,85 @@ class RegisterComponent extends Component {
 		);
 	}
 
+	renderEducationInput() {
+		return(
+			<div>
+				{this.renderContactInfo('UNESITE PODATKE O STUPNJU OBRAZOVANJA', 'mt-2')}
+				<div className="row">
+					<div className="col-lg-4 col-sm-2" />
+					<div className="col-lg-4 col-sm-8">
+						<select 
+							className="form-control" 
+							value={this.state.educationLevel} 
+							onChange={this.onChangeEducationLevel}
+						>
+				  		<option value="">Odaberi...</option>
+							<option value="OSNOVNA ŠKOLA">OSNOVNA ŠKOLA</option>
+							<option value="SREDNJA ŠKOLA">SREDNJA ŠKOLA</option>
+							<option value="FAKULTET">FAKULTET</option>
+						</select>
+					</div>
+					<div className="col-lg-4 col-sm-2" />
+				</div>
+				{(this.state.educationLevel === 'OSNOVNA ŠKOLA' || 
+				this.state.educationLevel === 'SREDNJA ŠKOLA' ||
+				this.state.educationLevel == 'FAKULTET') &&
+				this.state.type === 'student'
+					? (
+						<div className="row mt-3">
+							<div className="col-lg-4 col-sm-2" />
+							<div className="col-lg-4 col-sm-8">
+								<select 
+									className="form-control" 
+									value={this.state.educationGrade} 
+									onChange={this.onChangeEducationGrade}
+								>
+					 				<option value="">
+					 					Odaberi {this.state.educationLevel === 'FAKULTET' ? 'godinu' : 'razred'}...
+				  				</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									{this.state.educationLevel === 'OSNOVNA ŠKOLA' || 
+									this.state.educationLevel === 'FAKULTET'
+										? (<option value="5">5</option>) : null}
+									{this.state.educationLevel === 'OSNOVNA ŠKOLA'
+										? (<option value="6">6</option>) : null}
+									{this.state.educationLevel === 'OSNOVNA ŠKOLA'
+										? (<option value="7">7</option>) : null}
+									{this.state.educationLevel === 'OSNOVNA ŠKOLA'
+										? (<option value="8">8</option>) : null}
+								</select>
+							</div>
+							<div className="col-lg-4 col-sm-2" />
+						</div>
+					) : null}
+
+					{this.state.type === 'student' && (
+					this.state.educationLevel === 'SREDNJA ŠKOLA') ||
+					this.state.educationLevel === 'FAKULTET'
+					? (
+						<div className="row mt-3">
+							<div className="col-lg-4 col-sm-2" />
+							<div className="col-lg-4 col-sm-8">
+								<div className="form-group">
+									<input 
+										type="text"
+										className="form-control" 
+										value={this.state.institutionName} 
+										placeholder={this.state.educationLevel === 'SREDNJA ŠKOLA' ? 'Naziv srednje škole' : 'Naziv fakulteta'} 
+										onChange={this.onChangeInstitutionName}
+									/>
+								</div>
+							</div>
+							<div className="col-lg-4 col-sm-2" />
+						</div>
+					) : null}
+			</div>
+		);
+	}
+
 	render() {
 
 		const userInformationInput = this.state.type === 'instruktor' || this.state.type === 'student'
@@ -543,12 +658,16 @@ class RegisterComponent extends Component {
 				</div>
 			) : null;
 
+		const userEducationInput = this.state.type === 'student'
+			? (this.renderEducationInput()) : null;
+
 		return (
 			<div className="container">
 				{this.renderRegistrationCategoryInfo()}
 				{this.renderRegistrationCategories()}
 				{this.renderWarnings()}
 				{userInformationInput}
+				{userEducationInput}
 				{userDescriptionInput}
 				{userPictureInput}
 			</div>
