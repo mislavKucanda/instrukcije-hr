@@ -25,7 +25,15 @@ class LoginComponent extends Component {
 		this.onFocusInput = this.onFocusInput.bind(this);
 		this.onBlurInput = this.onBlurInput.bind(this);
 		this.renderWarning = this.renderWarning.bind(this);
+		this.redirectIfUserIsLoggedIn = this.redirectIfUserIsLoggedIn.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
+	}
+
+	redirectIfUserIsLoggedIn() {
+		const { user } = this.props;
+		//If user is logged in, redirect to profile page
+		if(Object.getOwnPropertyNames(user).length !== 0)
+			this.props.history.push('/profil');
 	}
 
 	onChangeUsername(event) {
@@ -107,6 +115,7 @@ class LoginComponent extends Component {
 	}
 
 	render() {
+		this.redirectIfUserIsLoggedIn();
 		return (
 			<div className="container">
 				<div className="row mt-3">
@@ -164,7 +173,7 @@ class LoginComponent extends Component {
 
 const stateToProps = (state) => {
 	return {
-		user: state.profiles.user
+		user: state.profiles.user,
 	};
 };
 

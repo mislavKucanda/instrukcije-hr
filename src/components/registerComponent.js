@@ -62,9 +62,17 @@ class RegisterComponent extends Component {
 		this.renderProfileDisplay = this.renderProfileDisplay.bind(this);
 		this.renderRegisterButton = this.renderRegisterButton.bind(this);
 		this.renderEducationInput = this.renderEducationInput.bind(this);
+		this.redirectIfUserIsLoggedIn = this.redirectIfUserIsLoggedIn.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
 		this.onSubmit = this.onSubmit.bind(this);
 		this.uploadFile = this.uploadFile.bind(this);
+	}
+
+	redirectIfUserIsLoggedIn() {
+		const { user } = this.props;
+		//If user is logged in, redirect to profile page
+		if(Object.getOwnPropertyNames(user).length !== 0)
+			this.props.history.push('/profil');
 	}
 
 	onChangeUsername(event) {
@@ -616,7 +624,7 @@ class RegisterComponent extends Component {
 	}
 
 	render() {
-
+		this.redirectIfUserIsLoggedIn();
 		const userInformationInput = this.state.type === 'instruktor' || this.state.type === 'student'
 			? (
 				<div>

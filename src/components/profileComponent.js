@@ -26,7 +26,7 @@ class ProfileComponent extends Component {
 		//If user is registered/logged in, set profile in state from props, otherwise redirect to log in
 		} else {
 			if(Object.getOwnPropertyNames(user).length === 0)
-				this.props.history.push("/prijava");
+				this.props.history.push('/prijava');
 			else
 				this.setState({ profile: user });
 		}
