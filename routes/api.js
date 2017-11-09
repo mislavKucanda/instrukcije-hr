@@ -148,10 +148,15 @@ router.post('/:resource', function(req, res, next) {
 		req.checkBody('password', 'Lozinka mora imati između 5 i 20 znakova.').len(5,20);
 		if(req.body.type === 'instruktor') {
 			req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+			req.checkBody('category', 'Obavezno je odabrati barem jednu kategoriju.').notEmpty();
 		}
 		if(req.body.type === 'student') {
 			req.checkBody('educationLevel', 'Obavezno unesite razinu obrazovanja.').notEmpty();
 			req.checkBody('educationGrade', 'Obavezno unesite trenutnu godinu obrazovanja.').notEmpty();
+			if(req.body.educationLevel === 'SREDNJA ŠKOLA' || req.body.educationLevel === 'FAKULTET') {
+				req.checkBody('institutionName', 'Obavezno unesite naziv ' +
+				 (req.body.educationLevel === 'SREDNJA ŠKOLA' ? 'srednje škole.' : 'fakulteta.')).notEmpty();
+			}
 		}
 		req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
 		req.checkBody('type', 'Moguće vrijednosti za uneseni tip su instruktor ili student.').isIn(['instruktor','student']);
