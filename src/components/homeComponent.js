@@ -93,9 +93,9 @@ class HomeComponent extends Component {
 				{profiles.map((profile, index) => {
 					if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
 						return(
-							<Link to={"/profil/" + profile._id} key={index}>
-								<ProfileCard profile={profile} />
-	  					</Link>
+								<Link to={"/profil/" + profile._id} key={index}>
+									<ProfileCard profile={profile} />
+	  						</Link>
 						);
 				})}
   		</div>
@@ -111,7 +111,17 @@ class HomeComponent extends Component {
 		    <p className="text-center mb-0 mt-3">ODABERI INSTRUKTORA</p>
 				<hr className="mt-0" />
 				{this.renderProfiles()}
-		   </div>
+				<div className="d-flex justify-content-center my-5">
+					<div className="mx-3" style={{ width:20, height:20 }}>1</div>
+					<div className="mx-3">2</div>
+					<div className="mx-3 center-block text-center" style={{ borderRadius:'50%', backgroundColor:'#b5dbd2', width:30, height:30, textAlign: 'center' }}><span>3</span></div>
+					<div className="mx-3">4</div>
+					<div className="mx-3">5</div>
+					<div className="mx-3">6</div>
+					<div className="mx-3">7</div>
+					<div className="mx-3">8</div>
+				</div>
+		  </div>
 		);
 	}
 }

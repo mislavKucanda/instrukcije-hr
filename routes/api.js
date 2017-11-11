@@ -104,7 +104,7 @@ router.post('/login', function(req, res, next) {
     	return res.json({
 				confirmation: 'fail',
 				result: 'Došlo je do pogreške na serveru.',
-			}); 
+			});
     }
     if (!user) { 
     	return res.json({
