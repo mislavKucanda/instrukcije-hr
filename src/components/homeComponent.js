@@ -13,6 +13,7 @@ class HomeComponent extends Component {
 		this.state = {
 			hooverCategory: '',
 			selectedCategory: '',
+			hoveredPageNum: 0,
 		};
 
 		this.renderCategories = this.renderCategories.bind(this);
@@ -20,6 +21,8 @@ class HomeComponent extends Component {
 		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.onSelectCategory = this.onSelectCategory.bind(this);
+		this.redirectToPage = this.redirectToPage.bind(this);
+		this.renderPagingNumbers = this.renderPagingNumbers.bind(this);
 	}
 
 	componentDidMount() {
@@ -86,6 +89,10 @@ class HomeComponent extends Component {
 		});
 	}
 
+	redirectToPage(pageNum) {
+		this.props.history.push('/' + pageNum);
+	}
+
 	renderProfiles() {
 		const { profiles } = this.props;
 		return (
@@ -102,6 +109,63 @@ class HomeComponent extends Component {
 		);
 	}
 
+	renderPagingNumbers() {
+		let { currentPage } = this.props;
+		const numOfProfiles = this.props.profiles.length;
+		const numOfPages = Math.ceil(numOfProfiles / Const.numOfProfilesPerPage);
+
+		//if currentPage from url is not a number, set currentPage to 1
+		currentPage = parseInt(currentPage) || 1;
+
+		//if currentPage > numOfPages redirect to first page
+		if(parseInt(currentPage) > numOfPages || parseInt(currentPage) < 0) {
+			currentPage = 1;
+		}
+
+		let pageNumberArray = [];
+		for(let i = 1; i <= numOfPages; i++) {
+			pageNumberArray.push(i);
+		}
+		
+		return(
+			<div className="d-flex justify-content-center my-5">
+				{pageNumberArray.map((num, index) => {
+					if(currentPage == (index+1)) {
+						return(
+							<div 
+								key={index}
+								className="mx-2 center-block text-center" 
+								style={{ borderRadius:'50%', backgroundColor:'#5c9b8e', width:30, height:30, fontSize:19, color:'white' }}
+							>
+							<span>{index+1}</span>
+							</div>
+						);
+					} else {
+						return(
+							<div 
+								key={index}
+								onMouseOver={() => this.setState({ hoveredPageNum: index+1 })} 
+              	onMouseOut={() => this.setState({ hoveredPageNum: 0 })}
+								onClick={() => this.redirectToPage(index+1)}
+								className="mx-2 center-block text-center" 
+								style={{ 
+									borderRadius: '50%', 
+									backgroundColor: (this.state.hoveredPageNum === index + 1 ? '#36B39C' : '#f1f2f2'), 
+									color: (this.state.hoveredPageNum === index + 1 ? 'white' : '#212529'),
+									width: 30, 
+									height: 30, 
+									fontSize: 19 
+								}}
+							>
+							<span>{index+1}</span>
+							</div>
+						);
+					}
+				})}
+			</div>
+		);
+	}
+
 	render() {
 		return(
 			<div className="container px-5">
@@ -111,16 +175,7 @@ class HomeComponent extends Component {
 		    <p className="text-center mb-0 mt-3">ODABERI INSTRUKTORA</p>
 				<hr className="mt-0" />
 				{this.renderProfiles()}
-				<div className="d-flex justify-content-center my-5">
-					<div className="mx-3" style={{ width:20, height:20 }}>1</div>
-					<div className="mx-3">2</div>
-					<div className="mx-3 center-block text-center" style={{ borderRadius:'50%', backgroundColor:'#b5dbd2', width:30, height:30, textAlign: 'center' }}><span>3</span></div>
-					<div className="mx-3">4</div>
-					<div className="mx-3">5</div>
-					<div className="mx-3">6</div>
-					<div className="mx-3">7</div>
-					<div className="mx-3">8</div>
-				</div>
+				{this.renderPagingNumbers()}
 		  </div>
 		);
 	}

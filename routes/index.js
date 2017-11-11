@@ -6,6 +6,10 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
+router.get('/:page', function(req, res, next) {
+  res.render('index');
+});
+
 router.get('/prijava', function(req, res, next) {
   res.render('index');
 });
