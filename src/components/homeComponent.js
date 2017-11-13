@@ -91,13 +91,19 @@ class HomeComponent extends Component {
 
 	redirectToPage(pageNum) {
 		this.props.history.push('/' + pageNum);
+		window.scrollTo(0, 0);
 	}
 
 	renderProfiles() {
 		const { profiles } = this.props;
+		const currentPage = this.props.currentPage || 1; 
+		let profilesOnThisPage = profiles.slice(
+			(currentPage - 1) * Const.numOfProfilesPerPage, 
+			currentPage * Const.numOfProfilesPerPage
+		);
 		return (
 			<div className="card-columns">
-				{profiles.map((profile, index) => {
+				{profilesOnThisPage.map((profile, index) => {
 					if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
 						return(
 								<Link to={"/profil/" + profile._id} key={index}>

@@ -18,7 +18,7 @@ class App extends Component {
 			<div>
 			 	<HeaderComponent />
 			 	<Route exact path="/" render={(props) => <HomeComponent {...props} />} />
-				<Route path="/:page" render={(props) => <HomeComponent {...props} currentPage={props.match.params.page}/>} />
+				<Route exact path="/:page" render={(props) => <HomeComponent {...props} currentPage={props.match.params.page}/>} />
 				<Route exact path="/profil" render={(props) => <ProfileComponent {...props} />} />
 				<Route path="/profil/:id" render={(props) => <ProfileComponent {...props} profileId={props.match.params.id} />} />
 				<Route path="/registracija" render={(props) => <RegisterComponent {...props} />} />
