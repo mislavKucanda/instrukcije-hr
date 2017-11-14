@@ -263,6 +263,7 @@ class RegisterComponent extends Component {
 					<option value="LEKTORIRANJE">LEKTORIRANJE</option>
 					<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
 					<option value="BIOLOGIJA">BIOLOGIJA</option>
+					<option value="FIZIKA">FIZIKA</option>
 				</select>
 				<label>Druga kategorija: </label>
 				<select 
@@ -281,6 +282,7 @@ class RegisterComponent extends Component {
 					<option value="LEKTORIRANJE">LEKTORIRANJE</option>
 					<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
 					<option value="BIOLOGIJA">BIOLOGIJA</option>
+					<option value="FIZIKA">FIZIKA</option>
 				</select>
 			</div>
 		);

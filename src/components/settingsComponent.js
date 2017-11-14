@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import ProfileSettingsComponent from './profileSettingsComponent';
+import CalendarSettingsComponent from './calendarSettingsComponent';
 import Const from '../../const';
 
 class SettingsComponent extends Component {
@@ -91,11 +93,15 @@ class SettingsComponent extends Component {
 	}
 
 	render(){
-		console.log(this.renderCategories());
+		const { selectedCategory } = this.state;
 		return(
 			<div className="container px-5">
 				{this.renderCategories()}
 				{this.renderCategoriesInfo()}
+				{selectedCategory === 'POSTAVKE PROFILA' 
+					? <ProfileSettingsComponent />
+					: <CalendarSettingsComponent />
+				}
 			</div>
 		);
 	}

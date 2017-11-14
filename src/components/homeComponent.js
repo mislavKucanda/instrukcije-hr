@@ -90,14 +90,31 @@ class HomeComponent extends Component {
 	}
 
 	redirectToPage(pageNum) {
-		this.props.history.push('/' + pageNum);
+		this.props.history.push('/profiles/' + pageNum);
 		window.scrollTo(0, 0);
+	}
+
+	getprofilesOfSelectedCategory() {
+		const { profiles } = this.props;
+		let profilesOfSelectedCategory = [];
+		profiles.map((profile) => {
+			if(this.state.selectedCategory === '' || profile.category.includes(this.state.selectedCategory))
+				profilesOfSelectedCategory.push(profile);
+		});
+		return profilesOfSelectedCategory;
 	}
 
 	renderProfiles() {
 		const { profiles } = this.props;
-		const currentPage = this.props.currentPage || 1; 
-		let profilesOnThisPage = profiles.slice(
+		let currentPage = this.props.currentPage || 1; 
+
+		let profilesOfSelectedCategory = this.getprofilesOfSelectedCategory();
+
+		//If provided currentPage from URL is out of the range, rander first page
+		currentPage = Math.ceil(profilesOfSelectedCategory.length / Const.numOfProfilesPerPage) < currentPage ? 1 : currentPage;
+
+		//Slice profiles that belonge to provided page
+		let profilesOnThisPage = profilesOfSelectedCategory.slice(
 			(currentPage - 1) * Const.numOfProfilesPerPage, 
 			currentPage * Const.numOfProfilesPerPage
 		);
@@ -117,7 +134,8 @@ class HomeComponent extends Component {
 
 	renderPagingNumbers() {
 		let { currentPage } = this.props;
-		const numOfProfiles = this.props.profiles.length;
+		const profilesOfSelectedCategory = this.getprofilesOfSelectedCategory();
+		const numOfProfiles = profilesOfSelectedCategory.length;
 		const numOfPages = Math.ceil(numOfProfiles / Const.numOfProfilesPerPage);
 
 		//if currentPage from url is not a number, set currentPage to 1
