@@ -127,6 +127,71 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
+router.put('/:resource', function(req, res, next) {
+	const { resource } = req.params;
+	var controller = controllers[resource];
+
+	if(controller == null) {
+		res.json({
+			confirmation: 'fail',
+			message: 'Resource does not exciste.',
+		});
+		return;
+	}
+
+	req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
+	req.checkBody('username', 'Korisničko ime mora imati između 5 i 20 znakova.').len(5, 20);
+
+	if(req.body.type === 'instruktor') {
+		req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+		req.checkBody('category', 'Obavezno je odabrati barem jednu kategoriju.').notEmpty();
+	}
+	if(req.body.type === 'student') {
+		req.checkBody('educationLevel', 'Obavezno unesite razinu obrazovanja.').notEmpty();
+		req.checkBody('educationGrade', 'Obavezno unesite trenutnu godinu obrazovanja.').notEmpty();
+		if(req.body.educationLevel === 'SREDNJA ŠKOLA' || req.body.educationLevel === 'FAKULTET') {
+			req.checkBody('institutionName', 'Obavezno unesite naziv ' +
+				(req.body.educationLevel === 'SREDNJA ŠKOLA' ? 'srednje škole.' : 'fakulteta.')).notEmpty();
+		}
+	}
+	req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
+	req.checkBody('type', 'Moguće vrijednosti za uneseni tip su instruktor ili student.').isIn(['instruktor','student']);
+	var errors = req.validationErrors();
+	if(errors) {
+		var errorsList = [];
+		errors.map((error) => errorsList.push(error.msg));
+		res.json({
+			confirmation: 'fail',
+			result: errorsList,
+		});
+		return;
+	}
+	controller.find({ username: req.body.username }, function(err, existingUser) {
+
+		if((existingUser.length === 0) || 
+			(req.body._id == existingUser[0]._id)) 
+	 	{
+			controller.update(req.body._id, req.body, function(err, updatedUser) {
+				if(err) {
+					return res.json({
+						confirmation: 'fail',
+						result: err,
+					});
+				}
+				return res.json({
+					confirmation: 'success',
+					result: updatedUser,
+				});
+			});
+		} else {
+			return res.json({
+				confirmation: 'fail',
+				result: ['Korisničko ime je zauzeto.'],
+			});
+		}
+	});
+});
+
 router.post('/:resource', function(req, res, next) {
 	const { resource } = req.params;
 	var controller = controllers[resource];
@@ -143,7 +208,7 @@ router.post('/:resource', function(req, res, next) {
 
 		//VALIDATION
 		req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
-		req.checkBody('username', 'Korisničko ime mora imati između 5 i 15 znakova.').len(5, 15);
+		req.checkBody('username', 'Korisničko ime mora imati između 5 i 20 znakova.').len(5, 20);
 		req.checkBody('password', 'Lozinka je obavezno polje.').notEmpty();
 		req.checkBody('password', 'Lozinka mora imati između 5 i 20 znakova.').len(5,20);
 		if(req.body.type === 'instruktor') {
@@ -173,7 +238,7 @@ router.post('/:resource', function(req, res, next) {
 		}
 
 		controller.find({ username: req.body.username }, function(err, existingUser) {
-			
+
 			if(existingUser.length === 0) {
 				console.log('Vnoter sem');
 				let newUser = req.body;
