@@ -53,14 +53,12 @@ class SettingsComponent extends Component {
 
 		return (
 			<div>
-				<p className="text-center mb-0 mt-3">{categoryInfo}</p>
-				<hr className="mt-0" />
+				<p className="text-center mb-3 mt-3">{categoryInfo}</p>
 			</div>
 		);
 	}
 
 	renderCategories() {
-		console.log(Const.settingsCategories);
 		return(
 			<div className="row mt-3">
 				<div className="col-lg-4 col-sm-3 col-xs-2" />
@@ -95,9 +93,12 @@ class SettingsComponent extends Component {
 	render(){
 		const { selectedCategory } = this.state;
 		return(
-			<div className="container px-5">
+			<div className="px-5">
+				<div className="container">
 				{this.renderCategories()}
 				{this.renderCategoriesInfo()}
+				</div>
+				<hr className="mt-0" />
 				{selectedCategory === 'POSTAVKE PROFILA' 
 					? <ProfileSettingsComponent />
 					: <CalendarSettingsComponent />
