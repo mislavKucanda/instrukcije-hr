@@ -19,9 +19,11 @@ class InstruktorProfileSettings extends Component {
 		this.renderInputElement = this.renderInputElement.bind(this);
 		this.populateStateWithUser = this.populateStateWithUser.bind(this);
 		this.changeUserElement = this.changeUserElement.bind(this);
+		this.onChangeCategory = this.onChangeCategory.bind(this);
 		this.renderWarnings = this.renderWarnings.bind(this);
 		this.renderInputElementChange = this.renderInputElementChange.bind(this);
 		this.renderAreaInputElement = this.renderAreaInputElement.bind(this);
+		this.renderMultiSelectInputElement = this.renderMultiSelectInputElement.bind(this);
 	}
 
 	componentDidMount() {
@@ -31,6 +33,21 @@ class InstruktorProfileSettings extends Component {
 	populateStateWithUser() {
 		const { user } = this.props;
 		this.setState({ user });
+	}
+
+	onChangeCategory(event, element) {
+		var options = event.target.options;
+  	var value = [];
+  	for (var i = 0, l = options.length; i < l; i++) {
+    	if (options[i].selected) {
+      	value.push(options[i].value);
+    	}
+  	}
+  	this.setState({
+			user: Object.assign({}, this.state.user, {
+				[element]: value
+			})
+		});
 	}
 
 	changeUserElement() {
@@ -134,6 +151,40 @@ class InstruktorProfileSettings extends Component {
 		);
 	}
 
+	renderMultiSelectInputElement(element) {
+		const { user } = this.props;
+		const { selectedElement } = this.state;
+		return(
+			selectedElement !== element
+				? (
+					<p>{user[element].map((category, index) => {
+						return category + (index !== (user[element].length - 1) ? ', ' : '')
+					})}</p>
+				) 
+				: (
+					<select
+						multiple
+						className="form-control" 
+						value={this.state.user[element]} 
+						onChange={(event) => this.onChangeCategory(event, element)}
+					>
+						<option value="MATEMATIKA">MATEMATIKA</option>
+						<option value="KEMIJA">KEMIJA</option>
+						<option value="HRVATSKI">HRVATSKI</option>
+						<option value="MATURA">MATURA</option>
+						<option value="STROJARSTVO">STROJARSTVO</option>
+						<option value="STRANI JEZICI">STRANI JEZICI</option>
+						<option value="GLAZBENI">GLAZBENI</option>
+						<option value="LEKTORIRANJE">LEKTORIRANJE</option>
+						<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
+						<option value="BIOLOGIJA">BIOLOGIJA</option>
+						<option value="INFORMATIKA">INFORMATIKA</option>
+						<option value="FIZIKA">FIZIKA</option>
+					</select>
+				)
+		);
+	}
+
 	renderWarnings() {
 		if(this.state.errorMessages) {
 			return (
@@ -157,16 +208,21 @@ class InstruktorProfileSettings extends Component {
 	}
 
 	renderInputElementChange(label, element, type) {
+		let InputElement;
+		if(type === 'area') {
+			InputElement = this.renderAreaInputElement(element);
+		} else if (type === 'line') {
+			InputElement = this.renderInputElement(element);
+		} else if (type === 'multiselect') {
+			InputElement = this.renderMultiSelectInputElement(element);
+		}
 		return (
 			<div className="row">
 				<div className="col-lg-2 col-md-2 col-sm-3">
 					<p>{label}</p>
 				</div>
 				<div className="col-lg-8 col-md-8 col-sm-7">
-					{type === 'area'
-						? this.renderAreaInputElement(element)	
-						: this.renderInputElement(element)
-					}
+					{InputElement}
 				</div>
 				<div className="col-lg-2 col-md-2 col-sm-2">
 					{this.renderChangeButton(element)}
@@ -189,6 +245,8 @@ class InstruktorProfileSettings extends Component {
 				{this.renderInputElementChange('E-mail:', 'email', 'line')}
 				<hr className="mt-0" />
 				{this.renderInputElementChange('Sadržaj oglasa:', 'description', 'area')}
+				<hr className="mt-0" />
+				{this.renderInputElementChange('Kategorije oglasa:', 'category', 'multiselect')}
 				<hr className="mt-0 mb-5" />
 			</div>
 		);

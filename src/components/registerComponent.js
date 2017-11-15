@@ -27,8 +27,7 @@ class RegisterComponent extends Component {
 			description: '',
 			address: '',
 			mobilePhone: '',
-			firstCategory: '',
-			secondCategory: '',
+			categories: [],
 			hooverCategory: '',																						//those are registration categories
 			selectedCategory: 'INSTRUKTOR',																//those are registration categories
 			categoryInfo: 'Kao instruktor možete kreirati oglas i odabrati do dvije kategorije unutar kojih će se prikazivati. Također možete postavljati u kalendar slobodne termine za instrukcije kako bi ih studenti/učenici mogli rezervirati.',			//those are registration categories
@@ -42,8 +41,7 @@ class RegisterComponent extends Component {
 		this.onChangeAddress = this.onChangeAddress.bind(this);
 		this.onChangeMobilePhone = this.onChangeMobilePhone.bind(this);
 		this.renderCategorySelect = this.renderCategorySelect.bind(this);
-		this.onChangeFirstCategory = this.onChangeFirstCategory.bind(this);
-		this.onChangeSecondCategory = this.onChangeSecondCategory.bind(this);
+		this.onChangeCategory = this.onChangeCategory.bind(this);
 		this.onMouseOverCategory = this.onMouseOverCategory.bind(this);
 		this.onMouseOutCategory = this.onMouseOutCategory.bind(this);
 		this.onHooverButton = this.onHooverButton.bind(this);
@@ -103,12 +101,15 @@ class RegisterComponent extends Component {
 		this.setState({ passwordMatch: event.target.value });
 	}
 
-	onChangeFirstCategory(event) {
-		this.setState({ firstCategory: event.target.value });
-	}
-
-	onChangeSecondCategory(event) {
-		this.setState({ secondCategory: event.target.value });
+	onChangeCategory(event) {
+		var options = event.target.options;
+  	var value = [];
+  	for (var i = 0, l = options.length; i < l; i++) {
+    	if (options[i].selected) {
+      	value.push(options[i].value);
+    	}
+  	}
+		this.setState({ categories: value });
 	}
 
 	onChangeEducationLevel(event) {
@@ -126,14 +127,7 @@ class RegisterComponent extends Component {
 	}
 
 	onSubmit(event) {
-		console.log(this.state);
 		event.preventDefault();
-		let categoryArray = [];
-		if(this.state.firstCategory !== '' && this.state.firstCategory !== null)
-			categoryArray.push(this.state.firstCategory);
-		if(this.state.secondCategory !== '' && this.state.secondCategory !== null
-			&& this.state.firstCategory !== this.state.secondCategory)
-			categoryArray.push(this.state.secondCategory)
 
 		const userForRegister = this.state.type === 'instruktor'
 		? {
@@ -146,7 +140,7 @@ class RegisterComponent extends Component {
 		  description: this.state.description,
 		  mobilePhone: this.state.mobilePhone,
 		  address: this.state.address,
-		  category: categoryArray,
+		  category: this.state.categories,
 		} 
 		: {
 			username: this.state.username,
@@ -246,33 +240,13 @@ class RegisterComponent extends Component {
 	renderCategorySelect() {		
 		return (
 			<div>
-				<label>Prva kategorija: </label>
-				<select 
+				<label>Odaberite kategorije: </label>
+				<select
+					multiple
 					className="form-control" 
-					value={this.state.firstCategory} 
-					onChange={this.onChangeFirstCategory}
+					value={this.state.categories} 
+					onChange={this.onChangeCategory}
 				>
-				  <option value="">Odaberi...</option>
-					<option value="MATEMATIKA">MATEMATIKA</option>
-					<option value="KEMIJA">KEMIJA</option>
-					<option value="HRVATSKI">HRVATSKI</option>
-					<option value="MATURA">MATURA</option>
-					<option value="STROJARSTVO">STROJARSTVO</option>
-					<option value="STRANI JEZICI">STRANI JEZICI</option>
-					<option value="GLAZBENI">GLAZBENI</option>
-					<option value="LEKTORIRANJE">LEKTORIRANJE</option>
-					<option value="ELEKTROTEHNIKA">ELEKTROTEHNIKA</option>
-					<option value="BIOLOGIJA">BIOLOGIJA</option>
-					<option value="INFORMATIKA">INFORMATIKA</option>
-					<option value="FIZIKA">FIZIKA</option>
-				</select>
-				<label>Druga kategorija: </label>
-				<select 
-					className="form-control" 
-					value={this.state.secondCategory} 
-					onChange={this.onChangeSecondCategory}
-				>
-				  <option value="">Odaberi...</option>
 					<option value="MATEMATIKA">MATEMATIKA</option>
 					<option value="KEMIJA">KEMIJA</option>
 					<option value="HRVATSKI">HRVATSKI</option>
@@ -358,7 +332,7 @@ class RegisterComponent extends Component {
 		return (
 			<div>
 				<p className="text-center mb-0 mt-3">
-					NAJPRIJE ODABERITE DA LI STE INSTRUKTOR ILI STUDENT/UČENIK
+					NAJPRIJE ODABERITE JESTE LI STE INSTRUKTOR ILI STUDENT/UČENIK
 				</p>
 				<hr className="mt-0" />
 			</div>
