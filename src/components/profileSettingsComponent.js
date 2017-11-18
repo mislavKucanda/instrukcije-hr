@@ -7,13 +7,7 @@ import StudentProfileSettings from './components/StudentProfileSettings';
 class ProfileSettingsComponent extends Component {
 	render() {
 		const { user } = this.props;
-		return (
-			<div>
-				{user.type === 'instruktor' 
-					? <InstruktorProfileSettings />
-					: <StudentProfileSettings />}
-			</div>
-		);
+		return <InstruktorProfileSettings />;
 	}
 }
 

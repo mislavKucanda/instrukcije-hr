@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Dropzone from 'react-dropzone';
+import axios from 'axios';
 
 import actions from '../../actions';
+import Const from '../../../const';
+import ProfileCard from './profileCard';
 
 class InstruktorProfileSettings extends Component {
 
@@ -13,6 +17,11 @@ class InstruktorProfileSettings extends Component {
 			selectedElement: '',
 			user: {},
 			errorMessages: [],
+			newPassword: '',
+			newPasswordRepeat: '', 
+			imgUrl: '',
+			cancelPictureButtonColor: '#36B39C',
+			registerButtonColor: '#36B39C',
 		}
 
 		this.renderChangeButton = this.renderChangeButton.bind(this);
@@ -24,6 +33,11 @@ class InstruktorProfileSettings extends Component {
 		this.renderInputElementChange = this.renderInputElementChange.bind(this);
 		this.renderAreaInputElement = this.renderAreaInputElement.bind(this);
 		this.renderMultiSelectInputElement = this.renderMultiSelectInputElement.bind(this);
+		this.renderSelectInputElement = this.renderSelectInputElement.bind(this);
+		this.renderPasswordInputElement = this.renderPasswordInputElement.bind(this);
+		this.renderChangePictureElement = this.renderChangePictureElement.bind(this);
+		this.renderSavePictureButton = this.renderSavePictureButton.bind(this);
+		this.uploadFile = this.uploadFile.bind(this);
 	}
 
 	componentDidMount() {
@@ -51,7 +65,38 @@ class InstruktorProfileSettings extends Component {
 	}
 
 	changeUserElement() {
-		const { user } = this.state;
+		const { user, newPassword, newPasswordRepeat, imgUrl } = this.state;
+		let passwordIsChanged = false;
+		//If new password is set make client side validation
+		if(newPassword !== '') {
+			if(newPassword === newPasswordRepeat) {
+				passwordIsChanged = true;
+			} else {
+				this.setState({ errorMessages: ['Unesene lozinke se ne podudaraju.'] });
+				return;
+			}
+		}
+
+		//If user is not changed, do not make an update request
+		if(Object.is(user, this.props.user) && !passwordIsChanged && imgUrl === '') {
+			return;
+		}
+
+		let newUser;
+		if(passwordIsChanged) {
+			newUser = Object.assign({}, user, {
+				password: newPassword,
+			});
+		} else if (imgUrl !== '') {
+			newUser = Object.assign({}, user, {
+				imgUrl: imgUrl,
+			});
+		} else {
+			newUser = user;
+		}
+
+		console.log(newUser);
+
 		//make an api request to update the user
 		fetch('http://localhost:3000/api/user', {
  			method: 'put',
@@ -60,7 +105,7 @@ class InstruktorProfileSettings extends Component {
     		'Content-Type': 'application/json'
   		},
   		credentials: 'include',
-  		body: JSON.stringify(user)
+  		body: JSON.stringify(newUser)
 		}).then(res => res.json())
   	.then(res => {
   		if(res.confirmation === 'success') {
@@ -84,6 +129,8 @@ class InstruktorProfileSettings extends Component {
    		  	//Reset user if change on user element is not saved
    		  	if(selectedElement !== '') {
    		  		this.populateStateWithUser();
+   		  		this.setState({ newPassword: '' });
+   		  		this.setState({ newPasswordRepeat: '' });
    		  		this.setState({ errorMessages: [] });
    		  	}
    		  	//Save change on user element to database and update application state
@@ -127,6 +174,32 @@ class InstruktorProfileSettings extends Component {
 		);
 	}
 
+	renderPasswordInputElement() {
+		const { selectedElement } = this.state;
+		return (
+			selectedElement !== 'password'
+				? <p>**********</p> 
+				: (
+					<div>
+						<input 
+							type="password"
+							className="form-control mb-3"
+							placeholder="Nova lozinka"
+							value={this.state.newPassword}
+							onChange={event => this.setState({ newPassword: event.target.value })}
+						/>
+						<input 
+							type="password"
+							className="form-control mb-3"
+							placeholder="Ponovite unos nove lozinke"
+							value={this.state.newPasswordRepeat}
+							onChange={event => this.setState({ newPasswordRepeat: event.target.value })}
+						/>
+					</div>
+				)
+		);
+	}
+
 	renderAreaInputElement(element) {
 		const { user } = this.props;
 		const { selectedElement } = this.state;
@@ -164,7 +237,7 @@ class InstruktorProfileSettings extends Component {
 				: (
 					<select
 						multiple
-						className="form-control" 
+						className="form-control mb-3" 
 						value={this.state.user[element]} 
 						onChange={(event) => this.onChangeCategory(event, element)}
 					>
@@ -183,6 +256,62 @@ class InstruktorProfileSettings extends Component {
 					</select>
 				)
 		);
+	}
+
+	renderSelectInputElement(element) {
+		const { user } = this.props;
+		const { selectedElement } = this.state;
+		if(element === 'educationLevel') {
+			return(
+				selectedElement !== element
+					? (
+						<p>{user[element]}</p>
+					) 
+					: (
+						<select 
+							className="form-control mb-3" 
+							value={this.state.user[element]} 
+							onChange={(event) => this.setState({
+								user: Object.assign({}, this.state.user, {
+									[element]: event.target.value,
+									institutionName: event.target.value === 'OSNOVNA ŠKOLA' ? '' : this.state.user.institutionName,
+								}),
+							})}
+						>
+							<option value="OSNOVNA ŠKOLA">OSNOVNA ŠKOLA</option>
+							<option value="SREDNJA ŠKOLA">SREDNJA ŠKOLA</option>
+							<option value="FAKULTET">FAKULTET</option>
+						</select>
+					)
+			);
+		} else if (element === 'educationGrade') {
+			return(
+				selectedElement !== element
+					? (
+						<p>{user[element]}</p>
+					) 
+					: (
+						<select 
+							className="form-control mb-3" 
+							value={this.state.user[element]} 
+							onChange={(event) => this.setState({
+								user: Object.assign({}, this.state.user, {
+									[element]: event.target.value
+								}),
+							})}
+						>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+						</select>
+					)
+			);
+		}
 	}
 
 	renderWarnings() {
@@ -207,26 +336,121 @@ class InstruktorProfileSettings extends Component {
 		}
 	}
 
+	uploadFile(files) {
+		const file = files[0];
+		const { CLOUDINARY_URL, CLOUDINARY_UPLOAD_PRESET } = Const;
+
+		var formData = new FormData();
+		formData.append('file', file);
+		formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+		axios({
+			url: CLOUDINARY_URL,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			data: formData
+		}).then(res => {
+			console.log(res.data.secure_url);
+			this.setState({ imgUrl: res.data.secure_url });
+		}).catch(err => {
+			console.log(err)
+		});
+	}
+
+	renderChangePictureElement() {
+		return(
+			<div className="row">
+				<div className="col-lg-4 col-sm-3" />
+				<div className="col-lg-4 col-sm-6" align="center">
+					<Dropzone onDrop={this.uploadFile}>
+						<div className="pt-4">
+							<p className="pt-5">Kliknite za odabir nove profilne fotografije</p>
+						</div>
+					</Dropzone>
+				</div>
+				<div className="col-lg-4 col-sm-3" />
+		</div>
+		);
+	}
+
 	renderInputElementChange(label, element, type) {
 		let InputElement;
 		if(type === 'area') {
 			InputElement = this.renderAreaInputElement(element);
 		} else if (type === 'line') {
-			InputElement = this.renderInputElement(element);
+			if( element === 'password') {
+				InputElement = this.renderPasswordInputElement();
+			} else {
+				InputElement = this.renderInputElement(element);
+			}
 		} else if (type === 'multiselect') {
 			InputElement = this.renderMultiSelectInputElement(element);
+		} else if (type === 'select') {
+			InputElement = this.renderSelectInputElement(element);
 		}
 		return (
+			<div>
+				<div className="row">
+					<div className="col-lg-2 col-md-2 col-sm-3">
+						<p>{label}</p>
+					</div>
+					<div className="col-lg-8 col-md-8 col-sm-7">
+						{InputElement}
+					</div>
+					<div className="col-lg-2 col-md-2 col-sm-2">
+						{this.renderChangeButton(element)}
+					</div>
+				</div>
+				<hr className="mt-0" />
+			</div>
+		);
+	}
+
+	renderProfileDisplay() {
+		const { imgUrl } = this.state;
+		return(
 			<div className="row">
-				<div className="col-lg-2 col-md-2 col-sm-3">
-					<p>{label}</p>
-				</div>
-				<div className="col-lg-8 col-md-8 col-sm-7">
-					{InputElement}
-				</div>
-				<div className="col-lg-2 col-md-2 col-sm-2">
-					{this.renderChangeButton(element)}
-				</div>
+					<div className="col-lg-1 col-md-0 col-sm-0" />
+					<div className="col-lg-3 col-md-4 col-sm-4">
+						<input
+							type="submit" 
+							className="btn btn-primary" 
+							style={{ backgroundColor: this.state.cancelPictureButtonColor, borderColor: '#5c9b8e' }}
+							value="Odustani"
+							onClick={event => this.setState({ imgUrl: '' })}
+							onMouseOver={() => this.setState({ cancelPictureButtonColor: '#5c9b8e' })}
+              onMouseOut={() => this.setState({ cancelPictureButtonColor: '#36B39C' })}
+						/>
+					</div>
+					<div className="col-lg-4 col-md-5 col-sm-7">
+						<ProfileCard profile={{ imgUrl, address:'', mobilePhone:'', email:'', username:'', description:'' }} />
+					</div>
+					<div className="col-lg-4 col-md-3 col-sm-1" />
+			</div>
+		);
+	}
+
+	renderSavePictureButton() {
+		return(
+			<div className="row mt-3 mb-5">
+				<div className="col-lg-3 col-sm-2" />
+					<div className="col-lg-6 col-sm-8" align="center">
+						<input 
+							type="submit" 
+							className="btn btn-primary" 
+							style={{ backgroundColor: this.state.registerButtonColor, borderColor: '#5c9b8e' }}
+							value="Zadovoljan sam novom profilnom slikom, SPREMI!" 
+							onClick={() => {
+								this.changeUserElement();
+								this.setState({ imgUrl: '' });
+							}} 
+							onMouseOver={() => this.setState({ registerButtonColor: '#5c9b8e' })}
+              onMouseOut={() => this.setState({ registerButtonColor: '#36B39C' })}
+						/>
+					</div>
+				<div className="col-lg-3 col-sm-2" />
 			</div>
 		);
 	}
@@ -234,20 +458,63 @@ class InstruktorProfileSettings extends Component {
 	render() {
 		const { user } = this.props;
 		return (
-			<div>
+			<div className="mb-5">
 				{this.renderWarnings()}
 				{this.renderInputElementChange('Korisničko ime:', 'username', 'line')}
-				<hr className="mt-0" />
-				{this.renderInputElementChange('Adresa / lokacija:', 'address', 'line')}
-				<hr className="mt-0" />
+				{this.renderInputElementChange('Lozinka:', 'password', 'line')}
+				{
+					user.type === 'instruktor' 
+						? this.renderInputElementChange('Adresa / lokacija:', 'address', 'line')
+						: null
+				}
 				{this.renderInputElementChange('Broj mobitela / telefona:', 'mobilePhone', 'line')}
-				<hr className="mt-0" />
 				{this.renderInputElementChange('E-mail:', 'email', 'line')}
-				<hr className="mt-0" />
-				{this.renderInputElementChange('Sadržaj oglasa:', 'description', 'area')}
-				<hr className="mt-0" />
-				{this.renderInputElementChange('Kategorije oglasa:', 'category', 'multiselect')}
-				<hr className="mt-0 mb-5" />
+				{
+					user.type === 'instruktor'
+						? this.renderInputElementChange('Sadržaj oglasa:', 'description', 'area')
+						: null
+				}
+				{
+					user.type === 'instruktor' 
+						? this.renderInputElementChange('Kategorije oglasa:', 'category', 'multiselect')
+						: null
+				}
+				{
+					user.type === 'student'
+						? this.renderInputElementChange('Stupanj obrazovanja:', 'educationLevel', 'select')
+						: null
+				}
+				{
+					user.type === 'student'
+						? this.renderInputElementChange('Razred / godina:', 'educationGrade', 'select')
+						: null
+				}
+				{
+					user.type === 'student' && user.educationLevel !== 'OSNOVNA ŠKOLA'
+						? this.renderInputElementChange('Naziv škole / fakulteta:', 'institutionName', 'line')
+						: null
+				}
+				<div className="container mt-5">
+					<div>
+						<p className="text-center mb-0 mt-3">
+							OVDJE PROMIJENITE PROFILNU FOTOGRAFIJU
+						</p>
+						<div className="container">
+							<div className="container">
+								<hr className="mt-0" />
+							</div>
+						</div>
+					</div>
+					{this.state.imgUrl
+						? (
+							<div>
+								{this.renderProfileDisplay()}
+								{this.renderSavePictureButton()}
+							</div>
+						) 
+						: this.renderChangePictureElement()
+					}
+				</div>
 			</div>
 		);
 	}
