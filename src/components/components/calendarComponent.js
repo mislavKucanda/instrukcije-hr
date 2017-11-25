@@ -13,12 +13,16 @@ class Calendar extends Component {
 			dayNumbersOfCurrentWeek: [],
 			dayInWeekHoovered: 0,
 			terminInDayHoovered: [],
-			terminStatus: [][],
+			//terminStatus: [][],
 		}
 	}
 
 	componentDidMount() {
-		this.setState({ dayNumbersOfCurrentWeek: getDayNumbersOfCurrentWeek(new Date()) });
+		this.setState({ dayNumbersOfCurrentWeek: getDayNumbersOfCurrentWeek(new Date()) });//, () => {
+			//dayNumbersOfCurrentWeek.map(() => {
+
+			//});
+		//});
 		this.setState({ currentDate: new Date() });
 	}
 
