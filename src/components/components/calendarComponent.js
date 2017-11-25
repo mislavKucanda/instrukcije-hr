@@ -11,6 +11,9 @@ class Calendar extends Component {
 		this.state = {
 			currentDate: {},
 			dayNumbersOfCurrentWeek: [],
+			dayInWeekHoovered: 0,
+			terminInDayHoovered: [],
+			terminStatus: [][],
 		}
 	}
 
@@ -22,9 +25,8 @@ class Calendar extends Component {
 	render() {
 		const { user } = this.props;
 		const { dayNumbersOfCurrentWeek, currentDate } = this.state;
-		console.log(dayNumbersOfCurrentWeek);
 		return (
-			<div className="row">
+			<div className="row mb-3">
 				<div className="col">
 					<div style={{ height: '90px' }}>
 						<p className="text-right" style={{ fontSize: '2rem', color: '#9D9FA2' }}>{'<'}</p>
@@ -47,7 +49,7 @@ class Calendar extends Component {
 									borderStyle: 'solid', 
 									borderColor: '#9D9FA2', 
 									borderTopColor: isCurrentDay ? '#5c9b8e' : '#9D9FA2',
-									borderWidth: '1px', 
+									borderWidth: '1px',
 									borderTopWidth: isCurrentDay ? '4px' : '1px',
 									borderRightWidth: day.weekNumber % 2 === 0 ? '1px' : '0px', 
 									borderLeftWidth: day.weekNumber % 2 === 0 ? '1px' : '0px',
@@ -59,6 +61,14 @@ class Calendar extends Component {
 								<p style={{ fontSize: '1.2rem' }}>{day.weekDay}</p> 
 							</div>
 							{Const.terminsInADay.map((termin, index) => {
+								var backgroundSelectedColor = isCurrentDay ? 'white' : null;
+								if(day.weekNumber === this.state.dayInWeekHoovered
+									&& termin === this.state.terminInDayHoovered)
+									backgroundSelectedColor = '#91CCBF';
+								//if(day.status === 'free')
+									//backgroundSelectedColor = '#36B39C';
+								//if(day.status === 'reserved')
+									//backgroundSelectedColor = '#F3D271';
 								return (
 									<div 
 										key={index} 
@@ -69,8 +79,20 @@ class Calendar extends Component {
 											borderWidth: '1px',
 											borderRightWidth: day.weekNumber % 2 === 0 ? '1px' : '0px', 
 											borderLeftWidth: day.weekNumber % 2 === 0 ? '1px' : '0px',
-											backgroundColor: isCurrentDay ? 'white' : null,
-										}}>
+											backgroundColor: backgroundSelectedColor,
+										}}
+										onMouseOver={() => this.setState({ 
+											dayInWeekHoovered: day.weekNumber, 
+											terminInDayHoovered: termin, 
+										})} 
+              			onMouseOut={() => this.setState({ 
+											dayInWeekHoovered: 0, 
+											terminInDayHoovered: '', 
+										})} 
+										onClick={() => this.setState({
+											freeTermins: this.state.freeTermins.push({  }),
+										})}
+									>
 										
 									</div>
 								);

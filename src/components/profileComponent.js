@@ -92,7 +92,7 @@ class ProfileComponent extends Component {
 		return(
 			<div className="container">
 				<div className="row">
-					<div className="col-lg-3 col-md-3 my-3">
+					<div className="col-lg-3 col-md-3 mt-3 mb-0">
 						<div>
 							<img src={imgUrl} alt="Profile picture" style={{ width: '100%', borderRadius: '3%' }} />
 							<div className="text-center mt-3">{username}</div>
@@ -111,6 +111,8 @@ class ProfileComponent extends Component {
 						</div>
 					</div>
 				</div>
+				<p className="text-center mb-0 mt-0">KALENDAR ZA REZERVACIJE TERMINA</p>
+				<hr className="mt-0" style={{ borderColor: '#9D9FA2' }} />
 				<Calendar />
 			</div>
 		);
