@@ -90,31 +90,41 @@ class ProfileComponent extends Component {
 	render() {
 		const { username, email, password, type, imgUrl, activated } = this.state.profile;
 		return(
-			<div className="container">
+			<div>
 				<div className="row">
-					<div className="col-lg-3 col-md-3 mt-3 mb-0">
-						<div>
-							<img src={imgUrl} alt="Profile picture" style={{ width: '100%', borderRadius: '3%' }} />
-							<div className="text-center mt-3">{username}</div>
+					<div className="col-1">
+					</div>
+					<div className="col-10 pl-0">
+					<div className="row">
+						<div className="col-lg-3 col-md-3 mt-3 mb-0">
+							<div>
+								<img src={imgUrl} alt="Profile picture" style={{ width: '100%', borderRadius: '3%' }} />
+								<div className="text-center mt-3">{username}</div>
+							</div>
+						</div>
+						<div className="col-lg-9 col-md-9" style={{ display:'flex', justifyContent:'center', alignItems:'center' }}>
+							<div>
+								<table>
+									<tbody>
+										{this.renderDescriptionInfo()}
+										{this.renderLocationInfo()}
+										{this.renderMobilePhoneInfo()}
+										{this.renderEmailInfo()}
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
-					<div className="col-lg-9 col-md-9" style={{ display:'flex', justifyContent:'center', alignItems:'center' }}>
-						<div>
-							<table>
-								<tbody>
-									{this.renderDescriptionInfo()}
-									{this.renderLocationInfo()}
-									{this.renderMobilePhoneInfo()}
-									{this.renderEmailInfo()}
-								</tbody>
-							</table>
-						</div>
-					</div>
+					<p className="text-center mb-0 mt-0">KALENDAR ZA REZERVACIJE TERMINA</p>
+					<hr className="mt-0" style={{ borderColor: '#9D9FA2' }} />
 				</div>
-				<p className="text-center mb-0 mt-0">KALENDAR ZA REZERVACIJE TERMINA</p>
-				<hr className="mt-0" style={{ borderColor: '#9D9FA2' }} />
+				<div className="col-1">
+				</div>
+			</div>
+			<div className="mt-2">
 				<Calendar />
 			</div>
+		</div>
 		);
 	}
 }
