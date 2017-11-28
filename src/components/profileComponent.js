@@ -91,7 +91,7 @@ class ProfileComponent extends Component {
 		const { username, email, password, type, imgUrl, activated } = this.state.profile;
 		return(
 			<div>
-				<div className="row">
+				<div className="row mx-0">
 					<div className="col-1">
 					</div>
 					<div className="col-10 pl-0">
@@ -118,7 +118,7 @@ class ProfileComponent extends Component {
 					<p className="text-center mb-0 mt-0">KALENDAR ZA REZERVACIJE TERMINA</p>
 					<hr className="mt-0" style={{ borderColor: '#9D9FA2' }} />
 				</div>
-				<div className="col-1">
+				<div className="col-1 pr-0">
 				</div>
 			</div>
 			<div className="mt-2">

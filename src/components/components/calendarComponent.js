@@ -10,16 +10,19 @@ class Calendar extends Component {
 		super(props);
 		this.state = {
 			currentDate: {},
+			currentDateForCalendar: {},
 			dayNumbersOfCurrentWeek: [],
 			dayInWeekHoovered: 0,
 			terminInDayHoovered: [],
 			currentAuthomatizationValue: 0,
 			hooveredAuthomatizationValue: -1,
+			hooveredLeftRight: '',
 			//terminStatus: [][],
 		}
 
 		this.renderAuthomatizationSelectValue = this.renderAuthomatizationSelectValue.bind(this);
 		this.renderCalendarLegend = this.renderCalendarLegend.bind(this);
+		this.renderCalendarNavButton = this.renderCalendarNavButton.bind(this);
 	}
 
 	componentDidMount() {
@@ -29,6 +32,7 @@ class Calendar extends Component {
 			//});
 		//});
 		this.setState({ currentDate: new Date() });
+		this.setState({ currentDateForCalendar: new Date() });
 	}
 
 	renderAuthomatizationSelectValue(value) {
@@ -54,6 +58,7 @@ class Calendar extends Component {
 						height:30, 
 						fontSize:19, 
 						color: hooveredAuthomatizationValue === value ? 'white' : '#212529', 
+						cursor: 'pointer', 
 					}}
 					onMouseOver={() => this.setState({ hooveredAuthomatizationValue: value })} 
           onMouseOut={() => this.setState({ hooveredAuthomatizationValue: -1 })}
@@ -90,9 +95,43 @@ class Calendar extends Component {
 		);
 	}
 
+	renderCalendarNavButton(buttonType, buttonSign) {
+		const { hooveredLeftRight, currentDateForCalendar } = this.state;
+		return (
+			<div 
+				className="center-block text-center d-inline-block" 
+				style={{ 
+					borderRadius:'50%', 
+					float: buttonType === 'left' ? 'right' : 'left',
+					backgroundColor: hooveredLeftRight === buttonType ? '#5c9b8e' : '#f1f2f2', 
+					width: 40, 
+					height: 40, 
+					fontSize: 23, 
+					color: hooveredLeftRight === buttonType ? 'white' : '#9D9FA2', 
+					paddingBottom: 10,
+					cursor: 'pointer', 
+				}}
+				onMouseOver={() => this.setState({ hooveredLeftRight: buttonType })} 
+        onMouseOut={() => this.setState({ hooveredLeftRight: '' })}
+				onClick={() => {
+					let date = currentDateForCalendar;
+					if(buttonType === 'left') 
+						date.setDate(date.getDate() - 7);
+					else if(buttonType === 'right')
+						date.setDate(date.getDate() + 7);
+					var copiedDate = new Date(date.getTime());
+					this.setState({ currentDateForCalendar: date }, 
+						this.setState({ dayNumbersOfCurrentWeek: getDayNumbersOfCurrentWeek(copiedDate) }));		
+				}}
+			>
+				<span>{buttonSign}</span>
+			</div>
+		);
+	}
+
 	render() {
 		const { user } = this.props;
-		const { dayNumbersOfCurrentWeek, currentDate } = this.state;
+		const { dayNumbersOfCurrentWeek, currentDate, hooveredLeftRight } = this.state;
 		let borderConst = 1;
 		if(dayNumbersOfCurrentWeek != null && dayNumbersOfCurrentWeek.length !== 0) {
 			const firstDateisEven = dayNumbersOfCurrentWeek[0].weekNumber % 2 === 0;
@@ -102,10 +141,10 @@ class Calendar extends Component {
 				borderConst = 1;
 		}
 		return (
-			<div className="row mb-3">
+			<div className="row mb-3 mx-0">
 				<div className="col-1">
-					<div style={{ height: '90px' }}>
-						<p className="text-right" style={{ fontSize: '2rem', color: '#9D9FA2' }}>{'<'}</p>
+					<div style={{ height: '90px', width: '100%', overflow: 'hidden' }}>
+						{this.renderCalendarNavButton('left', '<')}
 					</div>
 					{Const.terminsInADay.map((termin, index) => {
 						return (
@@ -181,8 +220,8 @@ class Calendar extends Component {
 					</div>
 				</div>
 				<div className="col-3 px-0">
-					<div style={{ height: '90px' }}>
-						<p className="pl-3" style={{ fontSize: '2rem', color: '#9D9FA2' }}>{'>'}</p>
+					<div style={{ height: '90px', width: '100%', overflow: 'hidden', paddingLeft: 15 }}>
+						{this.renderCalendarNavButton('right', '>')}
 					</div>
 					<div className="pl-3">
 						<p>Slobodni termin postavi na sljedećih:</p>
