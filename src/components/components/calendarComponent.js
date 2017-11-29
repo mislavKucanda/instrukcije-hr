@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { getDayNumbersOfCurrentWeek } from '../../../static';
 import Const from '../../../const';
+import CalendarLabel from './calendarLabelComponent';
 
 class Calendar extends Component {
 
@@ -11,12 +12,12 @@ class Calendar extends Component {
 		this.state = {
 			currentDate: {},
 			currentDateForCalendar: {},
-			dayNumbersOfCurrentWeek: [],
+			daysInCurrentWeek: [],
 			dayInWeekHoovered: 0,
-			terminInDayHoovered: [],
+			terminInDayHoovered: '',
 			currentAuthomatizationValue: 0,
 			hooveredAuthomatizationValue: -1,
-			hooveredLeftRight: '',
+			hooveredLeftRightNavButton: '',
 			//terminStatus: [][],
 		}
 
@@ -26,11 +27,7 @@ class Calendar extends Component {
 	}
 
 	componentDidMount() {
-		this.setState({ dayNumbersOfCurrentWeek: getDayNumbersOfCurrentWeek(new Date()) });//, () => {
-			//dayNumbersOfCurrentWeek.map(() => {
-
-			//});
-		//});
+		this.setState({ daysInCurrentWeek: getDayNumbersOfCurrentWeek(new Date()) });
 		this.setState({ currentDate: new Date() });
 		this.setState({ currentDateForCalendar: new Date() });
 	}
@@ -96,23 +93,23 @@ class Calendar extends Component {
 	}
 
 	renderCalendarNavButton(buttonType, buttonSign) {
-		const { hooveredLeftRight, currentDateForCalendar } = this.state;
+		const { hooveredLeftRightNavButton, currentDateForCalendar } = this.state;
 		return (
 			<div 
 				className="center-block text-center d-inline-block" 
 				style={{ 
 					borderRadius:'50%', 
 					float: buttonType === 'left' ? 'right' : 'left',
-					backgroundColor: hooveredLeftRight === buttonType ? '#5c9b8e' : '#f1f2f2', 
+					backgroundColor: hooveredLeftRightNavButton === buttonType ? '#5c9b8e' : '#f1f2f2', 
 					width: 40, 
 					height: 40, 
 					fontSize: 23, 
-					color: hooveredLeftRight === buttonType ? 'white' : '#9D9FA2', 
+					color: hooveredLeftRightNavButton === buttonType ? 'white' : '#9D9FA2', 
 					paddingBottom: 10,
 					cursor: 'pointer', 
 				}}
-				onMouseOver={() => this.setState({ hooveredLeftRight: buttonType })} 
-        onMouseOut={() => this.setState({ hooveredLeftRight: '' })}
+				onMouseOver={() => this.setState({ hooveredLeftRightNavButton: buttonType })} 
+        onMouseOut={() => this.setState({ hooveredLeftRightNavButton: '' })}
 				onClick={() => {
 					let date = currentDateForCalendar;
 					if(buttonType === 'left') 
@@ -121,7 +118,7 @@ class Calendar extends Component {
 						date.setDate(date.getDate() + 7);
 					var copiedDate = new Date(date.getTime());
 					this.setState({ currentDateForCalendar: date }, 
-						this.setState({ dayNumbersOfCurrentWeek: getDayNumbersOfCurrentWeek(copiedDate) }));		
+						this.setState({ daysInCurrentWeek: getDayNumbersOfCurrentWeek(copiedDate) }));		
 				}}
 			>
 				<span>{buttonSign}</span>
@@ -131,115 +128,111 @@ class Calendar extends Component {
 
 	render() {
 		const { user } = this.props;
-		const { dayNumbersOfCurrentWeek, currentDate, hooveredLeftRight } = this.state;
-		let borderConst = 1;
-		if(dayNumbersOfCurrentWeek != null && dayNumbersOfCurrentWeek.length !== 0) {
-			const firstDateisEven = dayNumbersOfCurrentWeek[0].weekNumber % 2 === 0;
-			if(firstDateisEven)
-				borderConst = 0;
-			else
-				borderConst = 1;
-		}
+		const { daysInCurrentWeek, currentDate } = this.state;
 		return (
-			<div className="row mb-3 mx-0">
-				<div className="col-1">
-					<div style={{ height: '90px', width: '100%', overflow: 'hidden' }}>
-						{this.renderCalendarNavButton('left', '<')}
-					</div>
-					{Const.terminsInADay.map((termin, index) => {
-						return (
-							<div className="text-right" key={index} style={{ height: '80px' }}>
-								{termin}
-							</div>
-						);
-					})}
-				</div>
-				<div className="col-8">
-					<div className="row">
-					{dayNumbersOfCurrentWeek.map((day, index) => {
-						const isCurrentDay = currentDate.getDate() === day.weekNumber;
-						return(
-							<div className="col px-0" key={index}>
-								<div 
-									className="text-center" 
-									style={{ 
-										borderStyle: 'solid', 
-										borderColor: '#9D9FA2', 
-										borderTopColor: isCurrentDay ? '#5c9b8e' : '#9D9FA2',
-										borderWidth: '1px',
-										borderTopWidth: isCurrentDay ? '4px' : '1px',
-										borderRightWidth: day.weekNumber % 2 === borderConst ? '1px' : '0px', 
-										borderLeftWidth: day.weekNumber % 2 === borderConst ? '1px' : '0px',
-										backgroundColor: isCurrentDay ? 'white' : null,
-										height: isCurrentDay ? '89px' : '90px',
-									}}
-								>
-									<p className="mb-0" style={{ fontSize: '2rem' }}>{day.weekNumber}</p>
-									<p style={{ fontSize: '1.2rem' }}>{day.weekDay}</p> 
+			<div className="mx-0">
+				<CalendarLabel startDate={daysInCurrentWeek[0]} endDate={daysInCurrentWeek[6]} />
+				<div className="row mb-3 mx-0 mt-2">
+					<div className="col-1">
+						<div style={{ height: '90px', width: '100%', overflow: 'hidden' }}>
+							{this.renderCalendarNavButton('left', '<')}
+						</div>
+						{Const.terminsInADay.map((termin, index) => {
+							return (
+								<div className="text-right" key={index} style={{ height: '80px' }}>
+									{termin}
 								</div>
-								{Const.terminsInADay.map((termin, index) => {
-									var backgroundSelectedColor = isCurrentDay ? 'white' : null;
-									if(day.weekNumber === this.state.dayInWeekHoovered
-										&& termin === this.state.terminInDayHoovered)
-										backgroundSelectedColor = '#91CCBF';
-									//if(day.status === 'free')
-										//backgroundSelectedColor = '#36B39C';
-									//if(day.status === 'reserved')
-										//backgroundSelectedColor = '#F3D271';
-									return (
-										<div 
-											key={index} 
-											style={{ 
-												height: '80px',
-												borderStyle: 'solid', 
-												borderColor: '#9D9FA2',
-												borderWidth: '1px',
-												borderRightWidth: day.weekNumber % 2 === borderConst ? '1px' : '0px', 
-												borderLeftWidth: day.weekNumber % 2 === borderConst ? '1px' : '0px',
-												backgroundColor: backgroundSelectedColor,
-											}}
-											onMouseOver={() => this.setState({ 
-												dayInWeekHoovered: day.weekNumber, 
-												terminInDayHoovered: termin, 
-											})} 
-	              			onMouseOut={() => this.setState({ 
-												dayInWeekHoovered: 0, 
-												terminInDayHoovered: '', 
-											})} 
-											onClick={() => this.setState({
-												freeTermins: this.state.freeTermins.push({  }),
-											})}
-										>
-											
-										</div>
-									);
-								})}
-							</div>
-						);
-					})}
+							);
+						})}
 					</div>
-				</div>
-				<div className="col-3 px-0">
-					<div style={{ height: '90px', width: '100%', overflow: 'hidden', paddingLeft: 15 }}>
-						{this.renderCalendarNavButton('right', '>')}
-					</div>
-					<div className="pl-3">
-						<p>Slobodni termin postavi na sljedećih:</p>
-						<div className="d-inline-block">
-							{this.renderAuthomatizationSelectValue(0)}
-							{this.renderAuthomatizationSelectValue(1)}
-							{this.renderAuthomatizationSelectValue(2)}
-							{this.renderAuthomatizationSelectValue(3)}
-							{this.renderAuthomatizationSelectValue(4)}
-							<div 
-								className="center-block text-center d-inline-block pl-2" 
-								style={{ borderRadius:'50%', backgroundColor:'#f1f2f2', width:30, color:'#212529' }}
-							>
-								<span>tjedana.</span>
-							</div>
+					<div className="col-8">
+						<div className="row">
+						{daysInCurrentWeek.map((day, index) => {
+							const isCurrentDay = (
+								currentDate.getDate() === day.day &&
+								currentDate.getMonth() === day.month &&
+								currentDate.getFullYear() === day.year
+							);
+							const indexCopy = index;
+							return(
+								<div className="col px-0" key={index}>
+									<div 
+										className="text-center" 
+										style={{ 
+											borderStyle: 'solid', 
+											borderColor: '#9D9FA2', 
+											borderTopColor: isCurrentDay ? '#5c9b8e' : '#9D9FA2',
+											borderWidth: '1px',
+											borderTopWidth: isCurrentDay ? '4px' : '1px',
+											borderRightWidth: indexCopy % 2 === 0 ? '1px' : '0px', 
+											borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
+											backgroundColor: isCurrentDay ? 'white' : null,
+											height: isCurrentDay ? '89px' : '90px',
+										}}
+									>
+										<p className="mb-0" style={{ fontSize: '2rem' }}>{day.day}</p>
+										<p style={{ fontSize: '1.2rem' }}>{day.dayLabel}</p> 
+									</div>
+									{Const.terminsInADay.map((termin, index) => {
+										var backgroundSelectedColor = isCurrentDay ? 'white' : null;
+										if(day.day === this.state.dayInWeekHoovered
+											&& termin === this.state.terminInDayHoovered)
+											backgroundSelectedColor = '#91CCBF';
+										return (
+											<div 
+												key={index} 
+												style={{ 
+													height: '80px',
+													borderStyle: 'solid', 
+													borderColor: '#9D9FA2',
+													borderWidth: '1px',
+													borderRightWidth: indexCopy % 2 === 0 ? '1px' : '0px', 
+													borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
+													backgroundColor: backgroundSelectedColor,
+												}}
+												onMouseOver={() => this.setState({ 
+													dayInWeekHoovered: day.day, 
+													terminInDayHoovered: termin, 
+												})} 
+		              			onMouseOut={() => this.setState({ 
+													dayInWeekHoovered: 0, 
+													terminInDayHoovered: '', 
+												})} 
+												onClick={() => this.setState({
+													freeTermins: this.state.freeTermins.push({  }),
+												})}
+											>
+												
+											</div>
+										);
+									})}
+								</div>
+							);
+						})}
 						</div>
 					</div>
-					{this.renderCalendarLegend()}
+					<div className="col-3 px-0">
+						<div style={{ height: '90px', width: '100%', overflow: 'hidden', paddingLeft: 15 }}>
+							{this.renderCalendarNavButton('right', '>')}
+						</div>
+						<div className="pl-3">
+							<p>Slobodni termin postavi na sljedećih:</p>
+							<div className="d-inline-block">
+								{this.renderAuthomatizationSelectValue(0)}
+								{this.renderAuthomatizationSelectValue(1)}
+								{this.renderAuthomatizationSelectValue(2)}
+								{this.renderAuthomatizationSelectValue(3)}
+								{this.renderAuthomatizationSelectValue(4)}
+								<div 
+									className="center-block text-center d-inline-block pl-2" 
+									style={{ borderRadius:'50%', backgroundColor:'#f1f2f2', width:30, color:'#212529' }}
+								>
+									<span>tjedana.</span>
+								</div>
+							</div>
+						</div>
+						{this.renderCalendarLegend()}
+					</div>
 				</div>
 			</div>
 		);

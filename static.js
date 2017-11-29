@@ -14,8 +14,10 @@ export function getDayNumbersOfCurrentWeek(date) {
 
 	for(let i = 0; i < 7; i++) {
 		dayNumbersOfCurrentWeek.push({
-			weekDay: Const.labelsOfWeekDays[i],
-			weekNumber: date.getDate(),
+			dayLabel: Const.labelsOfWeekDays[i],
+			day: date.getDate(),
+			month: date.getMonth(),
+			year: date.getFullYear(),
 		});
 		date.setDate(date.getDate() + 1);
 	}
