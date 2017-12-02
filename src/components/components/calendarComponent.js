@@ -13,17 +13,18 @@ class Calendar extends Component {
 			currentDate: {},
 			currentDateForCalendar: {},
 			daysInCurrentWeek: [],
-			dayInWeekHoovered: 0,
-			terminInDayHoovered: '',
+			hooveredDay: {},
 			currentAuthomatizationValue: 0,
 			hooveredAuthomatizationValue: -1,
 			hooveredLeftRightNavButton: '',
-			//terminStatus: [][],
+			freeTermins: [],
 		}
 
 		this.renderAuthomatizationSelectValue = this.renderAuthomatizationSelectValue.bind(this);
 		this.renderCalendarLegend = this.renderCalendarLegend.bind(this);
 		this.renderCalendarNavButton = this.renderCalendarNavButton.bind(this);
+		this.createFreeTermin = this.createFreeTermin.bind(this);
+		this.terminIsFree = this.terminIsFree.bind(this);
 	}
 
 	componentDidMount() {
@@ -31,6 +32,52 @@ class Calendar extends Component {
 		this.setState({ currentDate: new Date() });
 		this.setState({ currentDateForCalendar: new Date() });
 	}
+
+	createFreeTermin() {
+		const { user } = this.props;
+		const { hooveredDay } = this.state;
+
+		const reservation = {
+			mentorUsername: user.username,
+			day: hooveredDay.day,
+			month: hooveredDay.month,
+			year: hooveredDay.year,
+			termin: hooveredDay.termin,
+		}
+
+		fetch('http://localhost:3000/api/reservation', {
+ 			method: 'post',
+  		headers: {
+    		'Accept': 'application/json, text/plain, */*',
+    		'Content-Type': 'application/json'
+  		},
+  		credentials: 'include',
+  		body: JSON.stringify(reservation)
+		}).then(res => res.json())
+  		.then(res => {
+  			if(res.confirmation === 'success') {
+  				var freeTermins = this.state.freeTermins.slice()
+					freeTermins.push(res.result)
+					this.setState({ freeTermins: freeTermins })
+  			} else {
+  				console.log('ERROR');
+  				console.log(res.result);
+  			} 
+  		});
+	}
+
+	terminIsFree(day, termin) {
+		const { freeTermins } = this.state;
+		for(var i = 0; i < freeTermins.length; i++) {
+			if(
+				freeTermins[i].day === day.day &&
+				freeTermins[i].termin === termin
+			) {
+				return true;
+			}
+		}	
+		return false;
+	}	
 
 	renderAuthomatizationSelectValue(value) {
 		const { currentAuthomatizationValue, hooveredAuthomatizationValue } = this.state;
@@ -128,7 +175,7 @@ class Calendar extends Component {
 
 	render() {
 		const { user } = this.props;
-		const { daysInCurrentWeek, currentDate } = this.state;
+		const { daysInCurrentWeek, currentDate, hooveredDay } = this.state;
 		return (
 			<div className="mx-0">
 				<CalendarLabel startDate={daysInCurrentWeek[0]} endDate={daysInCurrentWeek[6]} />
@@ -175,9 +222,12 @@ class Calendar extends Component {
 									</div>
 									{Const.terminsInADay.map((termin, index) => {
 										var backgroundSelectedColor = isCurrentDay ? 'white' : null;
-										if(day.day === this.state.dayInWeekHoovered
-											&& termin === this.state.terminInDayHoovered)
+										if(Object.keys(hooveredDay).length !== 0 && 
+											day.day === hooveredDay.day &&
+											termin === hooveredDay.termin)
 											backgroundSelectedColor = '#91CCBF';
+										if(this.terminIsFree(day, termin))
+											backgroundSelectedColor = '#36B39C';
 										return (
 											<div 
 												key={index} 
@@ -191,16 +241,17 @@ class Calendar extends Component {
 													backgroundColor: backgroundSelectedColor,
 												}}
 												onMouseOver={() => this.setState({ 
-													dayInWeekHoovered: day.day, 
-													terminInDayHoovered: termin, 
+													hooveredDay: { 
+														day: day.day,
+														month: day.month,
+														year: day.year, 
+														termin, 
+													} 
 												})} 
 		              			onMouseOut={() => this.setState({ 
-													dayInWeekHoovered: 0, 
-													terminInDayHoovered: '', 
+													hooveredDay: {}
 												})} 
-												onClick={() => this.setState({
-													freeTermins: this.state.freeTermins.push({  }),
-												})}
+												onClick={this.createFreeTermin}
 											>
 												
 											</div>

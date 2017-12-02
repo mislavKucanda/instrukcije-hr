@@ -4,9 +4,11 @@ const Schema = mongoose.Schema;
 var ReservationSchema = new Schema({
 	mentorUsername: { type: String, required: true },
 	studentUsername: { type: String, default: '' },
-	date: { type: Date, required: true },
-	hour: { type: Number, required: true },
-	reserved: { type: Boolean, default: false },
+	day: { type: Number, required: true },
+	month: { type: Number, required: true },
+	year: { type: Number, required: true },
+	termin: { type: String, required: true },
+	status: { type: String, default: 'free' },
 });
 
 module.exports = mongoose.model('ReservationSchema', ReservationSchema); 
