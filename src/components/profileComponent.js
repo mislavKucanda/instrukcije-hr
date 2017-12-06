@@ -88,7 +88,11 @@ class ProfileComponent extends Component {
 	}
 
 	render() {
-		const { username, email, password, type, imgUrl, activated } = this.state.profile;
+		//I am not sure if this ever worked, check again when you will have more time.
+		if(this.state.profile == null) {
+			return(<div></div>);
+		}
+		const { username, email, password, type, activated, imgUrl } = this.state.profile;
 		return(
 			<div>
 				<div className="row mx-0 mt-1">
@@ -126,7 +130,7 @@ class ProfileComponent extends Component {
 				</div>
 			</div>
 			<div className="mt-1">
-				<Calendar />
+				<Calendar profileId={this.props.profileId}/>
 			</div>
 		</div>
 		);

@@ -70,6 +70,33 @@ router.get('/:resource', function(req, res, next) {
 	});
 });
 
+router.delete('/:resource/:id', function(req, res) {
+	const { resource, id } = req.params;
+	var controller = controllers[resource];
+
+	if(controller == null) {
+		res.json({
+			confirmation: 'fail',
+			message: 'Resource does not exciste.',
+		});
+		return;
+	}
+
+	controller.delete(id, function(err, result) {
+		if(err) {
+			res.json({
+				confirmation: 'fail',
+				message: err,
+			});
+			return;
+		} else {
+			res.json({
+			confirmation: 'success',
+			});
+		}	
+	});
+});
+
 router.get('/:resource/:id', function(req, res, next) {
 	const { resource, id } = req.params;
 	var controller = controllers[resource];

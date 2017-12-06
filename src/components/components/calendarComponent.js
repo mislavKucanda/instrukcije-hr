@@ -24,19 +24,46 @@ class Calendar extends Component {
 		this.renderCalendarLegend = this.renderCalendarLegend.bind(this);
 		this.renderCalendarNavButton = this.renderCalendarNavButton.bind(this);
 		this.createFreeTermin = this.createFreeTermin.bind(this);
+		this.deleteFreeTermin = this.deleteFreeTermin.bind(this);
 		this.terminIsFree = this.terminIsFree.bind(this);
+		this.getFreeTermins = this.getFreeTermins.bind(this);
 	}
 
 	componentDidMount() {
 		this.setState({ daysInCurrentWeek: getDayNumbersOfCurrentWeek(new Date()) });
 		this.setState({ currentDate: new Date() });
 		this.setState({ currentDateForCalendar: new Date() });
+		this.getFreeTermins();
+	}
+
+	getFreeTermins() {
+		const { user, profileId } = this.props;
+		
+		let username;
+		if(profileId == null)
+			username = user.username;
+		else 
+			username = this.props.profiles.find((elem) => { 
+				return elem._id === this.props.profileId 
+			}).username;
+		fetch('http://localhost:3000/api/reservation?mentorUsername=' + username, {
+			method: 'get',
+			headers: {
+    		'Accept': 'application/json, text/plain, */*',
+    		'Content-Type': 'application/json'
+  		},
+		}).then(res => res.json())
+		.then(res => {
+			console.log(res);
+			if(res.confirmation === 'success') {
+				this.setState({ freeTermins: res.results });
+			}
+		});
 	}
 
 	createFreeTermin() {
 		const { user } = this.props;
 		const { hooveredDay } = this.state;
-
 		const reservation = {
 			mentorUsername: user.username,
 			day: hooveredDay.day,
@@ -64,6 +91,49 @@ class Calendar extends Component {
   				console.log(res.result);
   			} 
   		});
+	}
+
+	deleteFreeTermin() {
+		const { user } = this.props;
+		const { hooveredDay, freeTermins } = this.state;
+
+		const reservation = {
+			mentorUsername: user.username,
+			day: hooveredDay.day,
+			month: hooveredDay.month,
+			year: hooveredDay.year,
+			termin: hooveredDay.termin,
+		}
+
+		let idToDelete;
+		freeTermins.map(termin => {
+			if(reservation.mentorUsername === termin.mentorUsername &&
+				reservation.day === termin.day &&
+				reservation.month === termin.month &&
+				reservation.year === termin.year &&
+				reservation.termin === termin.termin)
+				idToDelete = termin._id;
+		});
+
+		if(idToDelete) {
+			fetch('http://localhost:3000/api/reservation/' + idToDelete, {
+	 			method: 'delete',
+	  		headers: {
+	    		'Accept': 'application/json, text/plain, */*',
+	    		'Content-Type': 'application/json'
+	  		},
+	  		credentials: 'include',
+	  		body: JSON.stringify(reservation)
+			}).then(res => res.json())
+	  		.then(res => {
+	  			if(res.confirmation === 'success') {
+	  				var freeTerminsUpdate = freeTermins.filter(termin => termin._id !== idToDelete);
+						this.setState({ freeTermins: freeTerminsUpdate });
+	  			} else {
+	  				console.log(res.error);
+	  			} 
+	  		});
+		}
 	}
 
 	terminIsFree(day, termin) {
@@ -221,13 +291,16 @@ class Calendar extends Component {
 										<p style={{ fontSize: '1.2rem' }}>{day.dayLabel}</p> 
 									</div>
 									{Const.terminsInADay.map((termin, index) => {
+										let terminIsFree = false;
 										var backgroundSelectedColor = isCurrentDay ? 'white' : null;
 										if(Object.keys(hooveredDay).length !== 0 && 
 											day.day === hooveredDay.day &&
 											termin === hooveredDay.termin)
 											backgroundSelectedColor = '#91CCBF';
-										if(this.terminIsFree(day, termin))
+										if(this.terminIsFree(day, termin)) {
 											backgroundSelectedColor = '#36B39C';
+											terminIsFree = true;
+										}
 										return (
 											<div 
 												key={index} 
@@ -240,18 +313,29 @@ class Calendar extends Component {
 													borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
 													backgroundColor: backgroundSelectedColor,
 												}}
-												onMouseOver={() => this.setState({ 
-													hooveredDay: { 
-														day: day.day,
-														month: day.month,
-														year: day.year, 
-														termin, 
-													} 
-												})} 
+												onMouseOver={() => {
+													//if you are logged in, on your profile and you are instructor
+													if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+														this.props.profileId === this.props.user._id) {
+														this.setState({ 
+															hooveredDay: { 
+																day: day.day,
+																month: day.month,
+																year: day.year, 
+																termin, 
+															} 
+														});
+													}
+												}} 
 		              			onMouseOut={() => this.setState({ 
 													hooveredDay: {}
 												})} 
-												onClick={this.createFreeTermin}
+												onClick={() => { 
+													//if you are logged in, on your profile and you are instructor
+													if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+														this.props.profileId === this.props.user._id)
+														terminIsFree ? this.deleteFreeTermin() : this.createFreeTermin();
+												}}
 											>
 												
 											</div>
@@ -292,6 +376,7 @@ class Calendar extends Component {
 
 const stateToProps = (state) => {
 	return {
+		profiles: state.profiles.profiles,
 		user: state.profiles.user,
 	};
 };
