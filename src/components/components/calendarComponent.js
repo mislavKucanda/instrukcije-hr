@@ -292,11 +292,14 @@ class Calendar extends Component {
 									</div>
 									{Const.terminsInADay.map((termin, index) => {
 										let terminIsFree = false;
+										let terminIsHoovered = false;
 										var backgroundSelectedColor = isCurrentDay ? 'white' : null;
 										if(Object.keys(hooveredDay).length !== 0 && 
 											day.day === hooveredDay.day &&
-											termin === hooveredDay.termin)
+											termin === hooveredDay.termin) {
 											backgroundSelectedColor = '#91CCBF';
+											terminIsHoovered = true;
+										}
 										if(this.terminIsFree(day, termin)) {
 											backgroundSelectedColor = '#36B39C';
 											terminIsFree = true;
@@ -312,8 +315,9 @@ class Calendar extends Component {
 													borderRightWidth: indexCopy % 2 === 0 ? '1px' : '0px', 
 													borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
 													backgroundColor: backgroundSelectedColor,
+													position: 'relative',
 												}}
-												onMouseOver={() => {
+												onMouseEnter={() => {
 													//if you are logged in, on your profile and you are instructor
 													if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
 														this.props.profileId === this.props.user._id) {
@@ -327,7 +331,7 @@ class Calendar extends Component {
 														});
 													}
 												}} 
-		              			onMouseOut={() => this.setState({ 
+		              			onMouseLeave={() => this.setState({ 
 													hooveredDay: {}
 												})} 
 												onClick={() => { 
@@ -337,7 +341,20 @@ class Calendar extends Component {
 														terminIsFree ? this.deleteFreeTermin() : this.createFreeTermin();
 												}}
 											>
-												
+												{!terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+														this.props.profileId === this.props.user._id) && terminIsHoovered
+												? (
+													<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+												) : null}
+												{terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+														this.props.profileId === this.props.user._id) && terminIsHoovered
+												? (
+													<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+												) : null}
+												{terminIsFree && !terminIsHoovered
+												? (
+													<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}</p>
+												) : null}
 											</div>
 										);
 									})}
