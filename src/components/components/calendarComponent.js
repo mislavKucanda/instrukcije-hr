@@ -14,10 +14,13 @@ class Calendar extends Component {
 			currentDateForCalendar: {},
 			daysInCurrentWeek: [],
 			hooveredDay: {},
+			hooveredForReservedDay: {},
 			currentAuthomatizationValue: 0,
 			hooveredAuthomatizationValue: -1,
 			hooveredLeftRightNavButton: '',
 			freeTermins: [],
+			profileUsername: '',
+			hooveredForDeleteReservedDay: {},
 		}
 
 		this.renderAuthomatizationSelectValue = this.renderAuthomatizationSelectValue.bind(this);
@@ -27,6 +30,8 @@ class Calendar extends Component {
 		this.deleteFreeTermin = this.deleteFreeTermin.bind(this);
 		this.terminIsFree = this.terminIsFree.bind(this);
 		this.getFreeTermins = this.getFreeTermins.bind(this);
+		this.reserveFreeTermin = this.reserveFreeTermin.bind(this);
+		this.unReserveFreeTermin = this.unReserveFreeTermin.bind(this);
 	}
 
 	componentDidMount() {
@@ -54,9 +59,9 @@ class Calendar extends Component {
   		},
 		}).then(res => res.json())
 		.then(res => {
-			console.log(res);
 			if(res.confirmation === 'success') {
 				this.setState({ freeTermins: res.results });
+				this.setState({ profileUsername: username });
 			}
 		});
 	}
@@ -86,6 +91,91 @@ class Calendar extends Component {
   				var freeTermins = this.state.freeTermins.slice()
 					freeTermins.push(res.result)
 					this.setState({ freeTermins: freeTermins })
+  			} else {
+  				console.log('ERROR');
+  				console.log(res.result);
+  			} 
+  		});
+	}
+
+	reserveFreeTermin() {
+		const { hooveredForReservedDay, profileUsername } = this.state;
+		const { user } = this.props;
+		const reservation = {
+			mentorUsername: profileUsername,
+			studentUsername: user.username,
+			day: hooveredForReservedDay.day,
+			month: hooveredForReservedDay.month,
+			year: hooveredForReservedDay.year,
+			termin: hooveredForReservedDay.termin,
+			status: 'reserved',
+		};
+		fetch('http://localhost:3000/api/reservation', {
+ 			method: 'put',
+  		headers: {
+    		'Accept': 'application/json, text/plain, */*',
+    		'Content-Type': 'application/json'
+  		},
+  		credentials: 'include',
+  		body: JSON.stringify(reservation)
+		}).then(res => res.json())
+  		.then(res => {
+  			if(res.confirmation === 'success') {
+  				var newFreeTermins = [];
+  				this.state.freeTermins.map(termin => {
+  					if(termin.day === reservation.day &&
+  						termin.month === reservation.month &&
+  						termin.termin === reservation.termin &&
+  						termin.mentorUsername === reservation.mentorUsername) {
+  						reservation._id = termin._id;
+  						newFreeTermins.push(reservation);
+  					} else {
+  						newFreeTermins.push(termin);
+  					}
+  				});
+					this.setState({ freeTermins: newFreeTermins })
+  			} else {
+  				console.log('ERROR');
+  				console.log(res.result);
+  			} 
+  		});
+	}
+
+	unReserveFreeTermin() {
+		const { hooveredForDeleteReservedDay, profileUsername } = this.state;
+		const reservation = {
+			mentorUsername: profileUsername,
+			studentUsername: '',
+			day: hooveredForDeleteReservedDay.day,
+			month: hooveredForDeleteReservedDay.month,
+			year: hooveredForDeleteReservedDay.year,
+			termin: hooveredForDeleteReservedDay.termin,
+			status: 'free',
+		};
+		fetch('http://localhost:3000/api/reservation', {
+ 			method: 'put',
+  		headers: {
+    		'Accept': 'application/json, text/plain, */*',
+    		'Content-Type': 'application/json'
+  		},
+  		credentials: 'include',
+  		body: JSON.stringify(reservation)
+		}).then(res => res.json())
+  		.then(res => {
+  			if(res.confirmation === 'success') {
+  				var newFreeTermins = [];
+  				this.state.freeTermins.map(termin => {
+  					if(termin.day === reservation.day &&
+  						termin.month === reservation.month &&
+  						termin.termin === reservation.termin &&
+  						termin.mentorUsername === reservation.mentorUsername) {
+  						reservation._id = termin._id;
+  						newFreeTermins.push(reservation);
+  					} else {
+  						newFreeTermins.push(termin);
+  					}
+  				});
+					this.setState({ freeTermins: newFreeTermins })
   			} else {
   				console.log('ERROR');
   				console.log(res.result);
@@ -141,12 +231,16 @@ class Calendar extends Component {
 		for(var i = 0; i < freeTermins.length; i++) {
 			if(
 				freeTermins[i].day === day.day &&
-				freeTermins[i].termin === termin
-			) {
-				return true;
+				freeTermins[i].month === day.month &&
+				freeTermins[i].year === day.year &&
+				freeTermins[i].termin === termin) {
+				if(freeTermins[i].status === 'free')
+					return 'free';
+				else if(freeTermins[i].status === 'reserved')
+					return 'reserved';
 			}
 		}	
-		return false;
+		return 'notFreeNotReserved';
 	}	
 
 	renderAuthomatizationSelectValue(value) {
@@ -245,7 +339,8 @@ class Calendar extends Component {
 
 	render() {
 		const { user } = this.props;
-		const { daysInCurrentWeek, currentDate, hooveredDay } = this.state;
+		const { daysInCurrentWeek, currentDate, hooveredDay, hooveredForReservedDay, hooveredForDeleteReservedDay } = this.state;
+		console.log(hooveredForDeleteReservedDay);
 		return (
 			<div className="mx-0">
 				<CalendarLabel startDate={daysInCurrentWeek[0]} endDate={daysInCurrentWeek[6]} />
@@ -292,17 +387,60 @@ class Calendar extends Component {
 									</div>
 									{Const.terminsInADay.map((termin, index) => {
 										let terminIsFree = false;
+										let terminIsReserved = false;
 										let terminIsHoovered = false;
+										let terminIsHooveredForReservation = false;
 										var backgroundSelectedColor = isCurrentDay ? 'white' : null;
 										if(Object.keys(hooveredDay).length !== 0 && 
 											day.day === hooveredDay.day &&
-											termin === hooveredDay.termin) {
+											termin === hooveredDay.termin &&
+											day.year === hooveredDay.year &&
+											day.month === hooveredDay.month) {
 											backgroundSelectedColor = '#91CCBF';
 											terminIsHoovered = true;
 										}
-										if(this.terminIsFree(day, termin)) {
+										let terminStatus = 'non';
+										let studentReservedUsername = '';
+										const { freeTermins } = this.state;
+										for(var i = 0; i < freeTermins.length; i++) {
+											if(
+												freeTermins[i].day === day.day &&
+												freeTermins[i].month === day.month &&
+												freeTermins[i].year === day.year &&
+												freeTermins[i].termin === termin) {
+												if(freeTermins[i].status === 'free') {
+													terminStatus = 'free';
+													break;
+												}
+												else if(freeTermins[i].status === 'reserved')
+													terminStatus = 'reserved';
+													studentReservedUsername = freeTermins[i].studentUsername;
+													break;
+											}
+										}	
+										if(terminStatus === 'free') {
 											backgroundSelectedColor = '#36B39C';
 											terminIsFree = true;
+										} else if(terminStatus === 'reserved') {
+											backgroundSelectedColor = '#F3D271';
+											terminIsFree = false;
+											terminIsReserved = true;
+										}
+										if(Object.keys(hooveredForReservedDay).length !== 0 &&
+											day.day === hooveredForReservedDay.day &&
+											termin === hooveredForReservedDay.termin &&
+											day.year === hooveredForReservedDay.year &&
+											terminIsFree === true) {
+											backgroundSelectedColor = '#F3D271';
+											terminIsHooveredForReservation = true;
+										}
+										let hooveredForDelete = false;
+										if(Object.keys(hooveredForDeleteReservedDay).length !== 0 &&
+											day.day === hooveredForDeleteReservedDay.day &&
+											termin === hooveredForDeleteReservedDay.termin &&
+											day.year === hooveredForDeleteReservedDay.year &&
+											terminIsReserved === true) {
+											hooveredForDelete = true;
 										}
 										return (
 											<div 
@@ -330,19 +468,63 @@ class Calendar extends Component {
 															} 
 														});
 													}
+													//if you are logged in as a student, and you hoover free termin
+													if(this.props.user.type === 'student' &&
+														this.props.profileId !== this.props.user._id &&
+														terminIsFree === true) {
+														this.setState({ 
+															hooveredForReservedDay: {
+																day: day.day,
+																month: day.month,
+																year: day.year, 
+																termin,
+															}
+														});
+													}
+													//if you are logged in as a student, and you hoover YOUR reserved termin
+													if(this.props.user.type === 'student' &&
+														this.props.profileId !== this.props.user._id &&
+														terminIsFree === false &&
+														terminIsReserved === true &&
+														user.username === studentReservedUsername) {
+														this.setState({ 
+															hooveredForDeleteReservedDay: {
+																day: day.day,
+																month: day.month,
+																year: day.year,
+																termin,
+															}
+														});
+													}
 												}} 
 		              			onMouseLeave={() => this.setState({ 
-													hooveredDay: {}
+													hooveredDay: {},
+													hooveredForReservedDay: {},
+													hooveredForDeleteReservedDay: {},
 												})} 
 												onClick={() => { 
 													//if you are logged in, on your profile and you are instructor
 													if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id)
-														terminIsFree ? this.deleteFreeTermin() : this.createFreeTermin();
+														this.props.profileId === this.props.user._id) {
+														if(terminStatus === 'non') {
+															this.createFreeTermin();
+														} else if(terminStatus === 'free') {
+															this.deleteFreeTermin();
+														}
+													}
+													//if termin is hoovered for reservation
+													else if(terminIsHooveredForReservation === true)
+														this.reserveFreeTermin();
+													else if(hooveredForDelete === true) 
+														this.unReserveFreeTermin();
 												}}
 											>
 												{!terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id) && terminIsHoovered
+														this.props.profileId === this.props.user._id) && terminIsHoovered && terminStatus === 'non'
+												? (
+													<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+												) : null}
+												{terminIsHooveredForReservation
 												? (
 													<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
 												) : null}
@@ -351,9 +533,17 @@ class Calendar extends Component {
 												? (
 													<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
 												) : null}
-												{terminIsFree && !terminIsHoovered
+												{terminIsFree && !terminIsHoovered && !terminIsHooveredForReservation
 												? (
 													<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}</p>
+												) : null}
+												{terminIsReserved && !hooveredForDelete
+												? (
+													<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}<br />{studentReservedUsername}</p>
+												) : null}
+												{hooveredForDelete
+												? (
+													<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
 												) : null}
 											</div>
 										);

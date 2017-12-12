@@ -166,67 +166,36 @@ router.put('/:resource', function(req, res, next) {
 		return;
 	}
 
-	if(req.body.password.length !== 60) {
-		req.checkBody('password', 'Lozinka mora imati između 5 i 20 znakova.').len(5,20);
-		var errors = req.validationErrors();
-		if(errors) {
-			return res.json({ 
-				confirmation: 'fail',
-				result: ['Lozinka mora imati između 5 i 20 znakova.'],
-			});
-		}
-		//if new password is provided it is neccessery to hash it before insert to database.
-		bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
-			req.body.password = hash;
-			console.log(req.body);
-			controller.update(req.body._id, req.body, function(err, updatedUser) {
+	if(resource === 'reservation') {
+		controller.updateWithoutId(req.body, function(err, result) {
 				if(err) {
+					console.log(err);
 					return res.json({
 						confirmation: 'fail',
 						result: err,
 					});
 				}
+				console.log(result);
 				return res.json({
 					confirmation: 'success',
-					result: updatedUser,
+					result: result,
 				});
-			});
-		});
+		})
 	} else {
-	
 
-		req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
-		req.checkBody('username', 'Korisničko ime mora imati između 5 i 20 znakova.').len(5, 20);
-
-		if(req.body.type === 'instruktor') {
-			req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
-			req.checkBody('category', 'Obavezno je odabrati barem jednu kategoriju.').notEmpty();
-		}
-		if(req.body.type === 'student') {
-			req.checkBody('educationLevel', 'Obavezno unesite razinu obrazovanja.').notEmpty();
-			req.checkBody('educationGrade', 'Obavezno unesite trenutnu godinu obrazovanja.').notEmpty();
-			if(req.body.educationLevel === 'SREDNJA ŠKOLA' || req.body.educationLevel === 'FAKULTET') {
-				//req.checkBody('institutionName', 'Obavezno unesite naziv ' +
-					//(req.body.educationLevel === 'SREDNJA ŠKOLA' ? 'srednje škole.' : 'fakulteta.')).notEmpty();
+		if(req.body.password.length !== 60) {
+			req.checkBody('password', 'Lozinka mora imati između 5 i 20 znakova.').len(5,20);
+			var errors = req.validationErrors();
+			if(errors) {
+				return res.json({ 
+					confirmation: 'fail',
+					result: ['Lozinka mora imati između 5 i 20 znakova.'],
+				});
 			}
-		}
-		req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
-		req.checkBody('type', 'Moguće vrijednosti za uneseni tip su instruktor ili student.').isIn(['instruktor','student']);
-		var errors = req.validationErrors();
-		if(errors) {
-			var errorsList = [];
-			errors.map((error) => errorsList.push(error.msg));
-			res.json({
-				confirmation: 'fail',
-				result: errorsList,
-			});
-			return;
-		}
-		controller.find({ username: req.body.username }, function(err, existingUser) {
-
-			if((existingUser.length === 0) || 
-				(req.body._id == existingUser[0]._id)) 
-		 	{
+			//if new password is provided it is neccessery to hash it before insert to database.
+			bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+				req.body.password = hash;
+				console.log(req.body);
 				controller.update(req.body._id, req.body, function(err, updatedUser) {
 					if(err) {
 						return res.json({
@@ -239,13 +208,62 @@ router.put('/:resource', function(req, res, next) {
 						result: updatedUser,
 					});
 				});
-			} else {
-				return res.json({
-					confirmation: 'fail',
-					result: ['Korisničko ime je zauzeto.'],
-				});
+			});
+		} else {
+		
+
+			req.checkBody('username', 'Korisničko ime je obavezno odabrati.').notEmpty();
+			req.checkBody('username', 'Korisničko ime mora imati između 5 i 20 znakova.').len(5, 20);
+
+			if(req.body.type === 'instruktor') {
+				req.checkBody('description', 'Obavezno unesite sadržaj oglasa.').notEmpty();
+				req.checkBody('category', 'Obavezno je odabrati barem jednu kategoriju.').notEmpty();
 			}
-		});
+			if(req.body.type === 'student') {
+				req.checkBody('educationLevel', 'Obavezno unesite razinu obrazovanja.').notEmpty();
+				req.checkBody('educationGrade', 'Obavezno unesite trenutnu godinu obrazovanja.').notEmpty();
+				if(req.body.educationLevel === 'SREDNJA ŠKOLA' || req.body.educationLevel === 'FAKULTET') {
+					//req.checkBody('institutionName', 'Obavezno unesite naziv ' +
+						//(req.body.educationLevel === 'SREDNJA ŠKOLA' ? 'srednje škole.' : 'fakulteta.')).notEmpty();
+				}
+			}
+			req.checkBody('email', 'Uneseni email je pogrešnog formata.').isEmail();
+			req.checkBody('type', 'Moguće vrijednosti za uneseni tip su instruktor ili student.').isIn(['instruktor','student']);
+			var errors = req.validationErrors();
+			if(errors) {
+				var errorsList = [];
+				errors.map((error) => errorsList.push(error.msg));
+				res.json({
+					confirmation: 'fail',
+					result: errorsList,
+				});
+				return;
+			}
+			controller.find({ username: req.body.username }, function(err, existingUser) {
+
+				if((existingUser.length === 0) || 
+					(req.body._id == existingUser[0]._id)) 
+			 	{
+					controller.update(req.body._id, req.body, function(err, updatedUser) {
+						if(err) {
+							return res.json({
+								confirmation: 'fail',
+								result: err,
+							});
+						}
+						return res.json({
+							confirmation: 'success',
+							result: updatedUser,
+						});
+					});
+				} else {
+					return res.json({
+						confirmation: 'fail',
+						result: ['Korisničko ime je zauzeto.'],
+					});
+				}
+			});
+		}
 	}
 });
 

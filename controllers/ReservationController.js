@@ -42,6 +42,16 @@ module.exports = {
 		});
 	},
 
+	updateWithoutId: function(reservation, callback) {
+		Reservation.update({  
+			mentorUsername: reservation.mentorUsername,
+			day: reservation.day,
+			month: reservation.month,
+			year: reservation.year,
+			termin: reservation.termin,
+		}, { $set: { studentUsername: reservation.studentUsername, status: reservation.status }}, callback);
+	},
+
 	delete: function(id, callback) {
 		Reservation.findByIdAndRemove(id, function(err) {
 			if(err) {
