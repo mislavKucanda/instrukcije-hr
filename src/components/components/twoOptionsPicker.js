@@ -16,7 +16,9 @@ export default class TwoOptionsPicker extends Component {
 			optionOneSelectColor, 
 			optionTwoSelectColor, 
 			optionOneHooverColor, 
-			optionTwoHooverColor, 
+			optionTwoHooverColor,
+			optionOneFunction,
+			optionTwoFunction,
 		} = this.props;
 		const { selectedOption, hooveredOption } = this.state;
 		
@@ -39,8 +41,11 @@ export default class TwoOptionsPicker extends Component {
 						className="col-lg-3 col-md-4 col-sm-5 col-xs-12 text-center px-0"
 						onMouseEnter={() => { this.setState({ hooveredOption: 1 }) }}
 						onMouseLeave={() => { this.setState({ hooveredOption: 0 }) }}
-						onClick={() => { this.setState({ selectedOption: 1 }) }}
-						style={{ backgroundColor: backgroundColor1 }}
+						onClick={() => { 
+							this.setState({ selectedOption: 1 });
+							optionOneFunction();
+						}}
+						style={{ backgroundColor: backgroundColor1, color: selectedOption === 1 || hooveredOption === 1 ? 'white' : null }}
 					>
 						{optionOneText}
 					</div>
@@ -48,8 +53,11 @@ export default class TwoOptionsPicker extends Component {
 						className="col-lg-3 col-md-4 col-sm-5 col-xs-12 text-center px-0"
 						onMouseEnter={() => { this.setState({ hooveredOption: 2 }) }}
 						onMouseLeave={() => { this.setState({ hooveredOption: 0 }) }}
-						onClick={() => { this.setState({ selectedOption: 2 }) }}
-						style={{ backgroundColor: backgroundColor2 }}
+						onClick={() => { 
+							this.setState({ selectedOption: 2 });
+							optionTwoFunction();
+						}}
+						style={{ backgroundColor: backgroundColor2, color: selectedOption === 2 || hooveredOption === 2 ? 'white' : null }}
 					>
 						{optionTwoText}
 					</div>

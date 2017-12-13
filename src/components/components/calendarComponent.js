@@ -22,6 +22,7 @@ class Calendar extends Component {
 			freeTermins: [],
 			profileUsername: '',
 			hooveredForDeleteReservedDay: {},
+			typeOfTerminToSet: 'free',
 		}
 
 		this.renderAuthomatizationSelectValue = this.renderAuthomatizationSelectValue.bind(this);
@@ -69,7 +70,7 @@ class Calendar extends Component {
 
 	createFreeTermin() {
 		const { user } = this.props;
-		const { hooveredDay } = this.state;
+		const { hooveredDay, typeOfTerminToSet } = this.state;
 		const reservation = {
 			mentorUsername: user.username,
 			day: hooveredDay.day,
@@ -77,6 +78,8 @@ class Calendar extends Component {
 			year: hooveredDay.year,
 			termin: hooveredDay.termin,
 		}
+		if(typeOfTerminToSet === 'reserved')
+			reservation.status = 'reserved';
 
 		fetch('http://localhost:3000/api/reservation', {
  			method: 'post',
@@ -281,7 +284,7 @@ class Calendar extends Component {
 
 	renderCalendarLegend() {
 		return (
-			<div className="pt-5">
+			<div>
 				<div style={{ width: '100%', overflow: 'hidden' }}>
 					<div
 						className="mt-2"
@@ -340,7 +343,7 @@ class Calendar extends Component {
 
 	render() {
 		const { user } = this.props;
-		const { daysInCurrentWeek, currentDate, hooveredDay, hooveredForReservedDay, hooveredForDeleteReservedDay } = this.state;
+		const { daysInCurrentWeek, currentDate, hooveredDay, hooveredForReservedDay, hooveredForDeleteReservedDay, typeOfTerminToSet } = this.state;
 		return (
 			<div className="mx-0">
 				<CalendarLabel startDate={daysInCurrentWeek[0]} endDate={daysInCurrentWeek[6]} />
@@ -398,6 +401,9 @@ class Calendar extends Component {
 											day.year === hooveredDay.year &&
 											day.month === hooveredDay.month) {
 											dateNotInPast ? backgroundSelectedColor = '#91CCBF' : backgroundSelectedColor = '#D1D3D4';
+											if(dateNotInPast && typeOfTerminToSet === 'reserved') {
+												backgroundSelectedColor = '#F7E2A6';
+											}
 											terminIsHoovered = true;
 										}
 										let terminStatus = 'non';
@@ -558,31 +564,43 @@ class Calendar extends Component {
 						<div style={{ height: '90px', width: '100%', overflow: 'hidden' }}>
 							{this.renderCalendarNavButton('right', '>')}
 						</div>
-						<TwoOptionsPicker 
-							headerText="Odaberi vrstu termina:" 
-							optionOneText="Slobodni termin" 
-							optionTwoText="Zauzeti termin"
-							optionOneSelectColor="#36B39C"
-							optionTwoSelectColor="#F3D271"
-							optionOneHooverColor="#91CCBF"
-							optionTwoHooverColor="#F7E2A6"
-						/>
-						<div>
-							<p>Slobodni termin postavi na sljedećih:</p>
-							<div className="d-inline-block">
-								{this.renderAuthomatizationSelectValue(0)}
-								{this.renderAuthomatizationSelectValue(1)}
-								{this.renderAuthomatizationSelectValue(2)}
-								{this.renderAuthomatizationSelectValue(3)}
-								{this.renderAuthomatizationSelectValue(4)}
-								<div 
-									className="center-block text-center d-inline-block pl-2" 
-									style={{ borderRadius:'50%', backgroundColor:'#f1f2f2', width:30, color:'#212529' }}
-								>
-									<span>tjedana.</span>
+						{this.props.profileId == null && this.props.user.type === 'instruktor'
+							? (
+								<TwoOptionsPicker 
+									headerText="Odaberi vrstu termina:" 
+									optionOneText="Slobodni termin" 
+									optionTwoText="Zauzeti termin"
+									optionOneSelectColor="#5C9B8E"
+									optionTwoSelectColor="#E4C66B"
+									optionOneHooverColor="#91CCBF"
+									optionTwoHooverColor="#E8D49D"
+									optionOneFunction={() => { this.setState({ typeOfTerminToSet: 'free' }) }}
+									optionTwoFunction={() => { this.setState({ typeOfTerminToSet: 'reserved' }) }}
+								/>
+							) 
+							: null
+						}
+						{this.props.profileId == null && this.props.user.type === 'instruktor'
+							? (
+								<div className="pb-5">
+									<p>Slobodni termin postavi na sljedećih:</p>
+									<div className="d-inline-block">
+										{this.renderAuthomatizationSelectValue(0)}
+										{this.renderAuthomatizationSelectValue(1)}
+										{this.renderAuthomatizationSelectValue(2)}
+										{this.renderAuthomatizationSelectValue(3)}
+										{this.renderAuthomatizationSelectValue(4)}
+										<div 
+											className="center-block text-center d-inline-block pl-2" 
+											style={{ borderRadius:'50%', backgroundColor:'#f1f2f2', width:30, color:'#212529' }}
+										>
+											<span>tjedana.</span>
+										</div>
+									</div>
 								</div>
-							</div>
-						</div>
+							) 
+							: null
+						}
 						{this.renderCalendarLegend()}
 					</div>
 				</div>
