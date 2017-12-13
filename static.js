@@ -24,3 +24,9 @@ export function getDayNumbersOfCurrentWeek(date) {
 
 	return dayNumbersOfCurrentWeek;
 }
+
+export function dateIsNotInPast(day, month, year) {
+		const currentDate = new Date();
+		const selectedDate = new Date(year, month, day, 23, 59, 59); 
+		return selectedDate.getTime() >= currentDate.getTime();
+}
