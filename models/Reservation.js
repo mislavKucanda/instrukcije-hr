@@ -9,6 +9,7 @@ var ReservationSchema = new Schema({
 	year: { type: Number, required: true },
 	termin: { type: String, required: true },
 	status: { type: String, default: 'free' },
+	message: { type: String, default: '' },
 });
 
 module.exports = mongoose.model('ReservationSchema', ReservationSchema); 

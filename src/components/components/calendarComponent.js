@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import ToolTip from 'react-portal-tooltip';
 
 import { getDayNumbersOfCurrentWeek, dateIsNotInPast } from '../../../static';
 import Const from '../../../const';
 import CalendarLabel from './calendarLabelComponent';
 import TwoOptionsPicker from './twoOptionsPicker';
+import TooltipComponent from './tooltipComponent';
 
 class Calendar extends Component {
 
@@ -23,6 +25,7 @@ class Calendar extends Component {
 			profileUsername: '',
 			hooveredForDeleteReservedDay: {},
 			typeOfTerminToSet: 'free',
+			userTooltipInfo: {},
 		}
 
 		this.renderAuthomatizationSelectValue = this.renderAuthomatizationSelectValue.bind(this);
@@ -34,6 +37,7 @@ class Calendar extends Component {
 		this.getFreeTermins = this.getFreeTermins.bind(this);
 		this.reserveFreeTermin = this.reserveFreeTermin.bind(this);
 		this.unReserveFreeTermin = this.unReserveFreeTermin.bind(this);
+		this.getUserTooltipInfo = this.getUserTooltipInfo.bind(this);
 	}
 
 	componentDidMount() {
@@ -64,6 +68,30 @@ class Calendar extends Component {
 			if(res.confirmation === 'success') {
 				this.setState({ freeTermins: res.results });
 				this.setState({ profileUsername: username });
+			}
+		});
+	}
+
+	getUserTooltipInfo(username) {
+		console.log(username);
+		if(username === '') {
+			this.setState({ userTooltipInfo: {} });
+			return;	
+		}
+		fetch('http://localhost:3000/api/user?username='+username, {
+			method: 'get',
+			headers: {
+    		'Accept': 'application/json, text/plain, */*',
+    		'Content-Type': 'application/json'
+  		},
+		}).then(res => res.json())
+		.then(res => {
+			if(res.confirmation === 'success') {
+				console.log('load user success');
+				this.setState({ userTooltipInfo: res.results[0] });
+			} else {
+				console.log('load fail.');
+				console.log(res.result);
 			}
 		});
 	}
@@ -343,7 +371,8 @@ class Calendar extends Component {
 
 	render() {
 		const { user } = this.props;
-		const { daysInCurrentWeek, currentDate, hooveredDay, hooveredForReservedDay, hooveredForDeleteReservedDay, typeOfTerminToSet } = this.state;
+		const { daysInCurrentWeek, currentDate, hooveredDay, hooveredForReservedDay, hooveredForDeleteReservedDay, typeOfTerminToSet, userTooltipInfo } = this.state;
+		console.log(userTooltipInfo);
 		return (
 			<div className="mx-0">
 				<CalendarLabel startDate={daysInCurrentWeek[0]} endDate={daysInCurrentWeek[6]} />
@@ -436,6 +465,7 @@ class Calendar extends Component {
 										if(Object.keys(hooveredForReservedDay).length !== 0 &&
 											day.day === hooveredForReservedDay.day &&
 											termin === hooveredForReservedDay.termin &&
+											day.month === hooveredForReservedDay.month &&
 											day.year === hooveredForReservedDay.year &&
 											terminIsFree === true) {
 											backgroundSelectedColor = '#F7E2A6';
@@ -444,114 +474,138 @@ class Calendar extends Component {
 										let hooveredForDelete = false;
 										if(Object.keys(hooveredForDeleteReservedDay).length !== 0 &&
 											day.day === hooveredForDeleteReservedDay.day &&
+											day.month === hooveredForDeleteReservedDay.month &&
 											termin === hooveredForDeleteReservedDay.termin &&
 											day.year === hooveredForDeleteReservedDay.year &&
 											terminIsReserved === true) {
 											hooveredForDelete = true;
 										}
 										return (
-											<div 
-												key={index} 
-												style={{ 
-													height: '80px',
-													borderStyle: 'solid', 
-													borderColor: '#9D9FA2',
-													borderWidth: '1px',
-													borderRightWidth: indexCopy % 2 === 0 ? '1px' : '0px', 
-													borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
-													backgroundColor: backgroundSelectedColor,
-													position: 'relative',
-												}}
-												onMouseEnter={() => {
-													//if you are logged in, on your profile and you are instructor
-													if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id) {
-														this.setState({ 
-															hooveredDay: { 
-																day: day.day,
-																month: day.month,
-																year: day.year, 
-																termin, 
-															} 
-														});
-													}
-													//if you are logged in as a student, and you hoover free termin
-													if(this.props.user.type === 'student' &&
-														this.props.profileId !== this.props.user._id &&
-														terminIsFree === true) {
-														this.setState({ 
-															hooveredForReservedDay: {
-																day: day.day,
-																month: day.month,
-																year: day.year, 
-																termin,
-															}
-														});
-													}
-													//if you are logged in as a student, and you hoover YOUR reserved termin
-													if(this.props.user.type === 'student' &&
-														this.props.profileId !== this.props.user._id &&
-														terminIsFree === false &&
-														terminIsReserved === true &&
-														user.username === studentReservedUsername) {
-														this.setState({ 
-															hooveredForDeleteReservedDay: {
-																day: day.day,
-																month: day.month,
-																year: day.year,
-																termin,
-															}
-														});
-													}
-												}} 
-		              			onMouseLeave={() => this.setState({ 
-													hooveredDay: {},
-													hooveredForReservedDay: {},
-													hooveredForDeleteReservedDay: {},
-												})} 
-												onClick={() => { 
-													//if you are logged in, on your profile and you are instructor
-													if(((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id) && dateNotInPast) {
-														if(terminStatus === 'non') {
-															this.createFreeTermin();
-														} else if(terminStatus === 'free') {
-															this.deleteFreeTermin();
+											<div key={index}>
+												<div 
+													id={'a' + day.day + day.month + day.year + termin.slice(0,2)}
+													style={{ 
+														height: '80px',
+														borderStyle: 'solid', 
+														borderColor: '#9D9FA2',
+														borderWidth: '1px',
+														borderRightWidth: indexCopy % 2 === 0 ? '1px' : '0px', 
+														borderLeftWidth: indexCopy % 2 === 0 ? '1px' : '0px',
+														backgroundColor: backgroundSelectedColor,
+														position: 'relative',
+													}}
+													onMouseEnter={() => {
+														//if you are logged in, on your profile and you are instructor
+														if((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+															this.props.profileId === this.props.user._id) {
+															this.setState({ 
+																hooveredDay: { 
+																	day: day.day,
+																	month: day.month,
+																	year: day.year, 
+																	termin, 
+																} 
+															});
 														}
-													}
-													//if termin is hoovered for reservation
-													else if(terminIsHooveredForReservation === true)
-														this.reserveFreeTermin();
-													else if(hooveredForDelete === true) 
-														this.unReserveFreeTermin();
-												}}
-											>
-												{!terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id) && terminIsHoovered && terminStatus === 'non' && dateNotInPast
-												? (
-													<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-												) : null}
-												{terminIsHooveredForReservation
-												? (
-													<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-												) : null}
-												{terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
-														this.props.profileId === this.props.user._id) && terminIsHoovered
-												? (
-													<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-												) : null}
-												{terminIsFree && !terminIsHoovered && !terminIsHooveredForReservation
-												? (
-													<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}</p>
-												) : null}
-												{terminIsReserved && !hooveredForDelete
-												? (
-													<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}<br />{studentReservedUsername}</p>
-												) : null}
-												{hooveredForDelete
-												? (
-													<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-												) : null}
+														//if you are logged in as a student, and you hoover free termin
+														if(this.props.user.type === 'student' &&
+															this.props.profileId !== this.props.user._id &&
+															terminIsFree === true) {
+															this.setState({ 
+																hooveredForReservedDay: {
+																	day: day.day,
+																	month: day.month,
+																	year: day.year, 
+																	termin,
+																}
+															});
+														}
+														//if you are logged in as a student, and you hoover YOUR reserved termin
+														if((this.props.user.type === 'student' &&
+															this.props.profileId !== this.props.user._id &&
+															terminIsFree === false &&
+															terminIsReserved === true &&
+															user.username === studentReservedUsername) ||
+															this.props.user.type === 'instruktor' &&
+															this.props.profileId == null &&
+															terminIsFree === false &&
+															terminIsReserved === true) {
+															this.setState({ 
+																hooveredForDeleteReservedDay: {
+																	day: day.day,
+																	month: day.month,
+																	year: day.year,
+																	termin,
+																}
+															});
+															if(user.username === studentReservedUsername) {
+																this.setState({ userTooltipInfo: user });
+															} else {
+																this.getUserTooltipInfo(studentReservedUsername);
+															}
+														}
+													}} 
+			              			onMouseLeave={() => this.setState({ 
+														hooveredDay: {},
+														hooveredForReservedDay: {},
+														hooveredForDeleteReservedDay: {},
+														//userTooltipInfo: {},
+													})} 
+													onClick={() => {
+														//if you are logged in, on your profile and you are instructor
+														if(((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+															this.props.profileId === this.props.user._id) && dateNotInPast) {
+															if(terminStatus === 'non') {
+																this.createFreeTermin();
+															} else if(terminStatus === 'free') {
+																this.deleteFreeTermin();
+															}
+														}
+														//if termin is hoovered for reservation
+														else if(terminIsHooveredForReservation === true)
+															this.reserveFreeTermin();
+														if(hooveredForDelete === true) 
+															this.unReserveFreeTermin();
+													}}
+												>
+													{!terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+															this.props.profileId === this.props.user._id) && terminIsHoovered && terminStatus === 'non' && dateNotInPast
+													? (
+														<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+													) : null}
+													{terminIsHooveredForReservation
+													? (
+														<img src={Const.createTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+													) : null}
+													{terminIsFree && ((this.props.profileId == null && this.props.user.type === 'instruktor') ||
+															this.props.profileId === this.props.user._id) && terminIsHoovered
+													? (
+														<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+													) : null}
+													{terminIsFree && !terminIsHoovered && !terminIsHooveredForReservation
+													? (
+														<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}</p>
+													) : null}
+													{terminIsReserved && !hooveredForDelete
+													? (
+														<p className="text-center" style={{ color: 'white', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>{day.dayLabel}<br />{termin}<br />{studentReservedUsername}</p>
+													) : null}
+													{hooveredForDelete
+													? (
+														<img src={Const.deleteTerminUrl} style={{ width: '40%', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+													) : null}
+												</div>
+													<ToolTip active={hooveredForDelete} position="right" arrow="center" parent={'#a' + day.day + day.month + day.year + termin.slice(0,2)}>
+				                    <TooltipComponent 
+				                    	infoList={[
+				                    		userTooltipInfo.username, 
+				                    		userTooltipInfo.educationLevel, 
+				                    		userTooltipInfo.educationGrade, 
+				                    		userTooltipInfo.institutionName
+				                    	]} 
+				                    	imgUrl={userTooltipInfo.imgUrl}
+				                    />
+				                	</ToolTip>
 											</div>
 										);
 									})}
